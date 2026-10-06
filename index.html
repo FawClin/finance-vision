@@ -1,0 +1,1891 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Finance Vision</title>
+<style>
+:root{
+  --bg:#f8f9fd;--card:#fff;--ink:#202b46;--muted:#7b8aa5;--line:#dce5f2;
+  --green:#21a071;--red:#e75470;--purple:#786fff;--pink:#db69bb;--soft:#f3f6fb;
+  --shadow:0 10px 30px rgba(42,53,83,.07)
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{padding-bottom:calc(102px + env(safe-area-inset-bottom))}
+button,input,select{font:inherit}button{cursor:pointer}
+.app{max-width:860px;margin:0 auto;padding:13px 10px 40px}
+.section{display:none}.section.active{display:block}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);margin:12px 0;padding:15px}
+.title{font-size:30px;font-weight:850;letter-spacing:-.02em}.sub{font-size:11px;color:var(--muted);margin-top:3px}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;margin:7px 1px 11px}
+.actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:#fff;color:#56657d;border-radius:11px;min-height:34px;padding:0 11px;font-size:10px;font-weight:850}
+.btn.primary{border:0;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff}
+.btn.danger{color:var(--red);border-color:#ffd0db;background:#fff8fa}.btn.green{background:#e9f8f2;color:#16845e;border-color:#c3eadb}
+input,select{width:100%;min-height:38px;border:1px solid var(--line);border-radius:11px;background:#fbfcff;color:var(--ink);padding:8px 10px;outline:none}
+input:focus,select:focus{border-color:#a19eff;box-shadow:0 0 0 3px rgba(119,111,255,.09)}
+.field{display:flex;flex-direction:column;gap:5px}.field span{font-size:10px;color:var(--muted);font-weight:760}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.metric{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px}.metric span{display:block;color:var(--muted);font-size:10px;font-weight:750}.metric b{display:block;margin-top:4px;font-size:18px}.wide{grid-column:1/-1}
+.pos{color:var(--green)!important}.neg{color:var(--red)!important}
+
+/* splash/logo — based on the supplied 1-second Evisionsoft splash */
+.splash{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  z-index:99999;
+  background:
+    radial-gradient(circle at 50% 36%,rgba(84,182,227,.10),transparent 30%),
+    linear-gradient(180deg,#fff 0%,#fbfdff 100%);
+  animation:splashOut .14s ease 1.36s forwards;
+}
+.splash.force-hide{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+.currency-rain{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+.currency-drop{
+  position:absolute;
+  top:-25%;
+  min-width:34px;
+  text-align:center;
+  opacity:0;
+  color:#0c3f66;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI Symbol","Arial Unicode MS",sans-serif;
+  font-size:28px;
+  line-height:1;
+  font-weight:800;
+  text-shadow:0 5px 14px rgba(12,63,102,.10);
+  animation:currencyFall 1.22s linear forwards;
+}
+.cd1{left:3%;animation-delay:.00s}.cd2{left:9%;animation-delay:.18s}.cd3{left:15%;animation-delay:.05s}
+.cd4{left:21%;animation-delay:.26s}.cd5{left:27%;animation-delay:.10s}.cd6{left:33%;animation-delay:.34s}
+.cd7{left:39%;animation-delay:.02s}.cd8{left:45%;animation-delay:.22s}.cd9{left:51%;animation-delay:.12s}
+.cd10{left:57%;animation-delay:.31s}.cd11{left:63%;animation-delay:.07s}.cd12{left:69%;animation-delay:.24s}
+.cd13{left:75%;animation-delay:.14s}.cd14{left:81%;animation-delay:.36s}.cd15{left:87%;animation-delay:.04s}
+.cd16{left:93%;animation-delay:.20s}.cd17{left:6%;animation-delay:.41s}.cd18{left:36%;animation-delay:.46s}
+.cd19{left:66%;animation-delay:.43s}.cd20{left:90%;animation-delay:.48s}
+
+.splash-center{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(88%,350px);
+  transform:translate(-50%,-54%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.finance-vision-title{
+  margin-bottom:13px;
+  font-size:21px;
+  line-height:1;
+  font-weight:780;
+  letter-spacing:.2px;
+  color:#0c3f66;
+  opacity:0;
+  transform:translateY(-6px);
+  animation:titleIn .22s ease-out .02s forwards;
+}
+.logo-wrap{
+  position:relative;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  opacity:0;
+  transform:scale(.97);
+  animation:logoInFV .28s cubic-bezier(.2,.85,.2,1) .04s forwards;
+}
+.mark-img{
+  width:84px;
+  height:84px;
+  flex:0 0 auto;
+  object-fit:contain;
+  background:transparent;
+  border:0;
+  outline:0;
+  box-shadow:none;
+  filter:drop-shadow(0 8px 18px rgba(20,105,160,.08));
+}
+.word{
+  font-size:30px;
+  line-height:1;
+  font-weight:760;
+  letter-spacing:-1.4px;
+  color:#0c3f66;
+  opacity:0;
+  transform:translateX(10px);
+  animation:wordInFV .24s ease-out .24s forwards;
+  -webkit-font-smoothing:antialiased;
+}
+.shine{
+  position:absolute;
+  top:18%;
+  bottom:18%;
+  left:-36%;
+  width:26%;
+  opacity:0;
+  pointer-events:none;
+  transform:skewX(-20deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);
+  animation:shineFV .38s ease .40s forwards;
+}
+@keyframes titleIn{
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes logoInFV{
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes wordInFV{
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes shineFV{
+  0%{left:-36%;opacity:0}
+  22%{opacity:1}
+  100%{left:114%;opacity:0}
+}
+@keyframes currencyFall{
+  0%{opacity:0;transform:translateY(0)}
+  8%{opacity:.90}
+  82%{opacity:.86}
+  100%{opacity:0;transform:translateY(132vh)}
+}
+@keyframes splashOut{
+  to{opacity:0;visibility:hidden;pointer-events:none}
+}
+@media(max-width:390px){
+  .mark-img{width:72px;height:72px}
+  .word{font-size:27px}
+  .logo-wrap{gap:10px}
+  .finance-vision-title{font-size:27px;margin-bottom:11px}
+  .currency-drop{font-size:25px}
+}
+
+/* overview */
+.backup-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 12px}.backup-bar .btn{width:100%}
+.cash-chart{width:100%;height:178px;display:block}.axis{stroke:#d7e0eb;stroke-width:1}.zero{stroke:#aab5c6;stroke-dasharray:7 6}.trend{fill:none;stroke:#7377ff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.cash-chart text{font-size:9px;fill:#7d8ca6}
+.wealth-panel{padding:15px}
+.wealth-top-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
+.wealth-mini{background:#f7f9fd;border-radius:14px;padding:11px}.wealth-mini span{font-size:10px;color:var(--muted);font-weight:750}.wealth-mini b{display:block;margin-top:3px;font-size:17px}
+.nw-bars{margin-top:14px}.nw-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin:12px 0 7px}.nw-row span{font-size:12px;color:#66748b;font-weight:800}.nw-row b{font-size:13px}
+.nw-track{height:13px;border-radius:999px;background:#edf1f7;overflow:hidden}.nw-fill{height:100%;border-radius:999px}.nw-assets{background:linear-gradient(90deg,#66d2b0,#3bb98a)}.nw-debts{background:linear-gradient(90deg,#f69aac,#ed627e)}
+.nw-summary{display:flex;justify-content:space-between;align-items:end;border-top:1px dashed #dfe6f0;margin-top:15px;padding-top:13px}.nw-summary span{font-size:13px;color:#6b7990;font-weight:800}.nw-summary b{font-size:22px}
+.fx-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:13px}
+
+/* monthly compact style */
+.month-card{padding:0;overflow:hidden}.month-card>summary{list-style:none;display:grid;grid-template-columns:minmax(0,1.15fr) repeat(4,minmax(54px,.62fr)) 18px;gap:5px;align-items:center;padding:12px 10px}.month-card>summary::-webkit-details-marker{display:none}
+.month-card summary strong{font-size:14px;line-height:1.2}.month-card summary small{display:block;font-size:10px;color:var(--muted);margin-top:3px}.mmetric span{display:block;color:var(--muted);font-size:9.5px;line-height:1}.mmetric b{display:block;font-size:12.5px;margin-top:2px;line-height:1.1}.mmetric{text-align:right}.mcompleted{font-size:9.5px;color:var(--muted);margin-top:4px;white-space:nowrap}
+.body{padding:10px 11px 12px;border-top:1px solid #eef2f7}.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:7px}.mini-grid>div{background:#f6f8fd;border-radius:10px;padding:5px 7px}.mini-grid span{font-size:8px;color:var(--muted)}.mini-grid b{display:block;font-size:11px;margin-top:1px;line-height:1.15}
+.income-row,.expense-row{display:grid;grid-template-columns:30px minmax(0,1fr) 132px 26px;align-items:center;gap:6px;padding:8px 0;border-bottom:1px dashed #dee6f1}.entry-type{font-size:9px;font-weight:850;color:#7d8ca6;text-align:center}.income-name,.expense-name{font-size:14px}
+.check{appearance:none;width:23px;height:23px;min-height:23px;border:2px solid #cbd6e6;border-radius:7px;background:#fff;padding:0;position:relative}.check:checked{background:#31b787;border-color:#31b787}.check:checked:after{content:"✓";position:absolute;color:#fff;font-size:16px;font-weight:900;left:4px;top:-1px}
+.moneybox{display:grid;grid-template-columns:34px 1fr;align-items:center;border:1px solid var(--line);border-radius:13px;background:#f8faff;overflow:hidden}.moneybox span{font-size:9.5px;color:var(--muted);font-weight:800;text-align:center}.moneybox input{border:0;border-radius:0;background:transparent;text-align:right;min-height:34px;font-weight:800;padding:6px 8px}
+.iconbtn{width:26px;height:26px;min-height:26px;border:0;border-radius:8px;background:#fff1f4;color:var(--red);font-weight:900;padding:0}.delete-x{visibility:hidden;opacity:0;transition:.15s}.month-card.delete-mode .delete-x{visibility:visible;opacity:1}.month-bottom-income{display:flex;justify-content:flex-start;margin-top:9px}
+.month-actions{display:flex;justify-content:flex-end;align-items:center;gap:5px;margin-top:10px;flex-wrap:wrap}.month-actions .btn{height:30px;min-height:30px;font-size:8.7px;padding:0 8px}.month-status{margin-right:auto;color:var(--muted);font-size:10px}
+
+/* forms/cards */
+.inline-form{display:none}.inline-form.show{display:block}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.form-actions{display:flex;justify-content:flex-end;gap:7px;margin-top:11px}
+.loan-card,.premium-card{padding:0;overflow:hidden}.loan-card summary,.premium-card summary{list-style:none;display:grid;grid-template-columns:minmax(0,1fr) auto 18px;gap:7px;align-items:center;padding:12px 11px}.loan-card summary::-webkit-details-marker,.premium-card summary::-webkit-details-marker{display:none}.loan-card strong,.premium-card strong{font-size:14px}.loan-card small,.premium-card small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.summary-right{text-align:right}.summary-right span{display:block;color:var(--muted);font-size:8.5px}.summary-right b{font-size:11px}
+.loan-table,.premium-table{width:100%;border-collapse:collapse}.loan-table th,.loan-table td,.premium-table th,.premium-table td{padding:7px 4px;border-bottom:1px solid #edf1f6;font-size:9px;text-align:right}.loan-table th:first-child,.loan-table td:first-child,.premium-table th:first-child,.premium-table td:first-child{text-align:left}
+.tabs{display:flex;gap:7px;margin:10px 0}.tab{flex:1;border:1px solid var(--line);background:#fff;color:#64738b;border-radius:11px;min-height:37px;font-size:9.5px;font-weight:850}.tab.active{background:linear-gradient(135deg,#f2dbea,#e8e7ff);color:#424965}
+.tabpanel{display:none}.tabpanel.active{display:block}
+.asset-row,.budget-row,.card-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 28px;gap:7px;align-items:center;margin:7px 0}
+.status{display:inline-block;border-radius:999px;padding:3px 7px;font-size:8.5px;font-weight:850;background:#eef2f8;color:#66758d}.status.done{background:#e7f7f1;color:#1a8c64}.status.pre{background:#fff0f3;color:#cc5870}
+.empty{padding:22px 10px;text-align:center;color:var(--muted);font-size:11px}
+
+/* budget */
+.balance-hero{background:linear-gradient(135deg,#f8e7f2,#ececff);border:1px solid #e5e2fb;border-radius:19px;padding:16px;text-align:center;margin-bottom:12px}.balance-hero span{display:block;font-size:11px;color:#68768e;font-weight:800}.balance-hero b{display:block;font-size:28px;margin-top:4px}
+.budget-columns{display:grid;grid-template-columns:1fr 1fr;gap:10px}.budget-card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:12px}.budget-card h3{font-size:15px;margin:0}.budget-total{font-size:11px;color:var(--muted);margin:3px 0 10px}.budget-row{grid-template-columns:minmax(0,1fr) 105px 26px}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:5000;background:rgba(27,37,60,.36);display:none;align-items:center;justify-content:center;padding:16px}.overlay.show{display:flex}.dialog{width:min(100%,620px);max-height:88vh;overflow:auto;background:#fff;border-radius:20px;padding:15px;box-shadow:0 25px 70px rgba(0,0,0,.21)}.dialog h3{font-size:18px;margin:0}.dialog p{font-size:10.5px;color:var(--muted);margin:4px 0 12px}
+.report-view{position:fixed;inset:0;z-index:7000;background:#eef3fb;display:none;overflow:auto;padding:calc(9px + env(safe-area-inset-top)) 9px calc(18px + env(safe-area-inset-bottom))}.report-view.show{display:block}.report-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;gap:7px;padding:5px 0 9px;background:rgba(238,243,251,.95)}.report-image{display:block;max-width:100%;height:auto;margin:auto;border-radius:15px;box-shadow:var(--shadow)}
+.toast{position:fixed;z-index:9000;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#26324d;color:#fff;border-radius:11px;padding:9px 13px;font-size:10px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1}
+
+/* bottom nav */
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:1000;background:rgba(255,255,255,.96);border-top:1px solid #e3e9f2;padding-bottom:env(safe-area-inset-bottom);backdrop-filter:blur(14px)}.bottom-inner{max-width:860px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;padding:6px 7px}.navbtn{border:0;background:transparent;color:#71809b;border-radius:16px;padding:7px 2px;font-size:9.5px;font-weight:800;min-height:54px}.navbtn span{display:block;font-size:20px}.navbtn.active{background:linear-gradient(135deg,#df6bc0,#756fff);color:#fff}
+
+@media(max-width:560px){
+ .app{padding:10px 8px 34px}.title{font-size:19px}.grid2,.grid3,.form-grid{grid-template-columns:1fr}.wide{grid-column:auto}
+ .topline{align-items:flex-start}.actions{width:100%;justify-content:flex-end}
+ .month-card>summary{grid-template-columns:minmax(0,1.05fr) repeat(4,minmax(47px,.53fr)) 15px;padding:9px 6px;gap:4px}
+ .month-card summary strong{font-size:15px}.month-card summary small{font-size:10px}.mmetric span{font-size:9px}.mmetric b{font-size:12px}.mcompleted{font-size:9px}
+ .income-row,.expense-row{grid-template-columns:28px minmax(0,1fr) 122px 25px}.income-name,.expense-name{font-size:14px}
+ .budget-columns{grid-template-columns:1fr}.asset-row,.budget-row,.card-row{grid-template-columns:minmax(0,1fr) 106px 26px}
+ .wealth-top-grid{grid-template-columns:1fr 1fr}.nw-summary b{font-size:20px}
+}
+
+/* Monthly actions: five buttons, one line */
+.month-card .month-actions{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:5px!important;
+  width:100%!important;
+  margin-top:12px!important;
+}
+.month-card .month-actions .btn{
+  width:100%!important;
+  min-width:0!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:0 4px!important;
+  font-size:8.7px!important;
+  white-space:nowrap!important;
+  border-radius:10px!important;
+}
+@media(max-width:430px){
+  .month-card .month-actions{gap:4px!important}
+  .month-card .month-actions .btn{
+    font-size:8px!important;
+    padding:0 2px!important;
+    letter-spacing:-.08px!important;
+  }
+}
+
+.allocation-top-actions,.loan-top-actions{flex-wrap:nowrap!important}
+.allocation-top-actions .btn,.loan-top-actions .btn{white-space:nowrap!important}
+.allocation-card .allocation-edit-row{display:flex;justify-content:flex-end;margin-top:10px}
+.allocation-card .allocation-edit-row .btn{min-width:92px}
+.month-card .month-actions .btn:nth-of-type(1),
+.month-card .month-actions .btn:nth-of-type(2){
+  font-size:9.4px!important;
+  font-weight:900!important;
+}
+@media(max-width:430px){
+  .allocation-top-actions,.loan-top-actions{width:100%;display:grid!important;gap:5px!important}
+  .allocation-top-actions{grid-template-columns:1fr 1fr!important}
+  .loan-top-actions{grid-template-columns:1.35fr 1fr 1fr 1fr!important}
+  .allocation-top-actions .btn,.loan-top-actions .btn{width:100%!important;padding:0 4px!important;font-size:8.4px!important}
+  .month-card .month-actions .btn:nth-of-type(1),
+  .month-card .month-actions .btn:nth-of-type(2){font-size:8.8px!important}
+}
+
+/* Clearer button typography without changing box sizes */
+.month-card .month-actions .btn{
+  font-size:9.8px!important;
+  font-weight:900!important;
+  padding-left:2px!important;
+  padding-right:2px!important;
+}
+.month-card .month-actions .btn:nth-of-type(1),
+.month-card .month-actions .btn:nth-of-type(2){
+  font-size:10.2px!important;
+}
+.loan-top-actions .btn,
+.allocation-top-actions .btn{
+  font-size:10px!important;
+  font-weight:900!important;
+}
+@media(max-width:430px){
+  .month-card .month-actions .btn{font-size:9px!important}
+  .month-card .month-actions .btn:nth-of-type(1),
+  .month-card .month-actions .btn:nth-of-type(2){font-size:9.4px!important}
+  .loan-top-actions .btn,
+  .allocation-top-actions .btn{font-size:8.9px!important}
+}
+
+/* Bottom nav geometry is identical for all five tabs */
+.bottom{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  height:calc(78px + env(safe-area-inset-bottom))!important;
+  min-height:calc(78px + env(safe-area-inset-bottom))!important;
+  padding:0 0 env(safe-area-inset-bottom)!important;
+  display:flex!important;
+  align-items:flex-start!important;
+}
+.bottom-inner{
+  width:100%!important;
+  max-width:860px!important;
+  height:78px!important;
+  min-height:78px!important;
+  margin:0 auto!important;
+  padding:6px 7px!important;
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  gap:3px!important;
+}
+.navbtn{
+  width:100%!important;
+  height:66px!important;
+  min-height:66px!important;
+  max-height:66px!important;
+  margin:0!important;
+  padding:7px 2px!important;
+  border-radius:16px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+  font-size:9.5px!important;
+  line-height:1.05!important;
+  font-weight:800!important;
+  white-space:nowrap!important;
+  transform:none!important;
+}
+.navbtn span{
+  display:block!important;
+  height:25px!important;
+  min-height:25px!important;
+  line-height:25px!important;
+  font-size:20px!important;
+  margin:0 0 2px!important;
+}
+.navbtn.active{
+  height:66px!important;
+  min-height:66px!important;
+  max-height:66px!important;
+  padding:7px 2px!important;
+  font-size:9.5px!important;
+  transform:none!important;
+}
+
+#loanForm.overlay .dialog,
+#cardForm.overlay .dialog,
+#borrowedOverlay.overlay .dialog{
+  width:min(calc(100vw - 28px),620px)!important;
+  max-height:84vh!important;
+  overflow:auto!important;
+  margin:auto!important;
+}
+
+/* ===== Uniform bottom navigation: every active tab matches Overview/Monthly ===== */
+.bottom{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  z-index:1000!important;
+  background:rgba(255,255,255,.97)!important;
+  border-top:1px solid #e3e9f2!important;
+  padding:0 0 env(safe-area-inset-bottom)!important;
+  height:calc(82px + env(safe-area-inset-bottom))!important;
+  min-height:calc(82px + env(safe-area-inset-bottom))!important;
+  display:block!important;
+}
+
+.bottom-inner{
+  width:100%!important;
+  max-width:860px!important;
+  height:82px!important;
+  min-height:82px!important;
+  margin:0 auto!important;
+  padding:6px 8px!important;
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:4px!important;
+  align-items:center!important;
+}
+
+.navbtn{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  height:68px!important;
+  min-height:68px!important;
+  max-height:68px!important;
+  margin:0!important;
+  padding:7px 2px 6px!important;
+  border:0!important;
+  border-radius:18px!important;
+  background:transparent!important;
+  color:#71809b!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:1px!important;
+  font-size:10px!important;
+  line-height:1!important;
+  font-weight:800!important;
+  white-space:nowrap!important;
+  transform:none!important;
+  scale:1!important;
+  overflow:visible!important;
+}
+
+.navbtn span{
+  display:block!important;
+  width:28px!important;
+  height:28px!important;
+  min-width:28px!important;
+  min-height:28px!important;
+  max-width:28px!important;
+  max-height:28px!important;
+  margin:0 0 2px!important;
+  padding:0!important;
+  font-size:22px!important;
+  line-height:28px!important;
+  text-align:center!important;
+  transform:none!important;
+}
+
+.navbtn.active{
+  width:100%!important;
+  height:68px!important;
+  min-height:68px!important;
+  max-height:68px!important;
+  padding:7px 2px 6px!important;
+  border-radius:18px!important;
+  background:linear-gradient(135deg,#df6bc0,#756fff)!important;
+  color:#fff!important;
+  font-size:10px!important;
+  line-height:1!important;
+  font-weight:850!important;
+  transform:none!important;
+  scale:1!important;
+}
+
+.navbtn.active span{
+  width:28px!important;
+  height:28px!important;
+  min-width:28px!important;
+  min-height:28px!important;
+  max-width:28px!important;
+  max-height:28px!important;
+  font-size:22px!important;
+  line-height:28px!important;
+  margin:0 0 2px!important;
+  transform:none!important;
+}
+
+/* Explicitly neutralize any per-tab sizing differences */
+.navbtn[data-target="overview"],
+.navbtn[data-target="monthly"],
+.navbtn[data-target="loans"],
+.navbtn[data-target="premiums"],
+.navbtn[data-target="budget"]{
+  font-size:10px!important;
+}
+
+@media(max-width:430px){
+  .bottom-inner{
+    height:82px!important;
+    min-height:82px!important;
+    padding:6px 6px!important;
+    gap:3px!important;
+  }
+  .navbtn,
+  .navbtn.active{
+    height:68px!important;
+    min-height:68px!important;
+    max-height:68px!important;
+    font-size:9.6px!important;
+    padding:7px 1px 6px!important;
+  }
+  .navbtn span,
+  .navbtn.active span{
+    width:28px!important;
+    height:28px!important;
+    min-width:28px!important;
+    min-height:28px!important;
+    max-width:28px!important;
+    max-height:28px!important;
+    font-size:22px!important;
+    line-height:28px!important;
+  }
+}
+
+/* ===== Bottom nav vertical-position fix =====
+   Keep the bar anchored to the physical bottom and use safe-area only inside it. */
+.bottom{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:0!important;
+  margin:0!important;
+  background:rgba(255,255,255,.97)!important;
+  border-top:1px solid #e3e9f2!important;
+}
+
+.bottom-inner{
+  width:100%!important;
+  max-width:860px!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0 auto!important;
+  padding:6px 7px calc(6px + env(safe-area-inset-bottom))!important;
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:3px!important;
+  align-items:start!important;
+}
+
+.navbtn,
+.navbtn.active{
+  height:68px!important;
+  min-height:68px!important;
+  max-height:68px!important;
+  margin:0!important;
+  align-self:start!important;
+  transform:none!important;
+}
+
+/* Leave exactly enough page clearance for the actual fixed bar */
+body{
+  padding-bottom:calc(80px + env(safe-area-inset-bottom))!important;
+}
+
+/* ===== Fixed-height app shell: document never scrolls ===== */
+:root{
+  --nav-h: 86px;
+}
+
+html,
+body{
+  position:fixed!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  margin:0!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  -webkit-overflow-scrolling:auto!important;
+}
+
+/* The only scrolling surface in the application */
+#app-scroll{
+  position:fixed!important;
+  top:0!important;
+  left:0!important;
+  right:0!important;
+  bottom:var(--nav-h)!important;
+  width:auto!important;
+  max-width:none!important;
+  height:auto!important;
+  margin:0!important;
+  padding:13px 10px 34px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+  transform:none!important;
+  filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  contain:none!important;
+  will-change:auto!important;
+}
+
+/* Nav is a separate viewport layer and never participates in section layout */
+#bottom-nav{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  top:auto!important;
+  z-index:9999!important;
+  margin:0!important;
+  transform:translateZ(0)!important;
+  -webkit-transform:translateZ(0)!important;
+  will-change:transform!important;
+}
+
+/* Document/body no longer needs nav clearance because only #app-scroll scrolls */
+body{
+  padding-bottom:0!important;
+}
+
+/* Prevent any tab or section from becoming the containing block for fixed UI */
+.section,
+.app,
+#app-scroll{
+  transform:none!important;
+  filter:none!important;
+  perspective:none!important;
+  contain:none!important;
+}
+
+/* Preserve the established bottom-nav visual dimensions */
+#bottom-nav .bottom-inner{
+  width:100%!important;
+  max-width:860px!important;
+  margin:0 auto!important;
+}
+
+@media(max-width:560px){
+  #app-scroll{
+    padding:10px 8px 28px!important;
+  }
+}
+
+/* ===== Final bottom navigation placement ===== */
+:root{ --nav-h: 92px; }
+
+html,body{
+  position:fixed!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+
+#app-scroll{
+  position:fixed!important;
+  top:0!important;
+  left:0!important;
+  right:0!important;
+  bottom:var(--nav-h)!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding:10px 8px 28px!important;
+}
+
+#bottom-nav{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  top:auto!important;
+  z-index:99999!important;
+  height:var(--nav-h)!important;
+  min-height:var(--nav-h)!important;
+  background:rgba(255,255,255,.98)!important;
+  border-top:1px solid #e3e9f2!important;
+  padding:0!important;
+  margin:0!important;
+  transform:none!important;
+  -webkit-transform:none!important;
+}
+
+#bottom-nav .bottom-inner{
+  width:100%!important;
+  max-width:860px!important;
+  height:100%!important;
+  min-height:100%!important;
+  margin:0 auto!important;
+  padding:7px 7px calc(7px + env(safe-area-inset-bottom))!important;
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:4px!important;
+  align-items:start!important;
+}
+
+#bottom-nav .navbtn,
+#bottom-nav .navbtn.active{
+  width:100%!important;
+  height:68px!important;
+  min-height:68px!important;
+  max-height:68px!important;
+  margin:0!important;
+  padding:7px 2px 6px!important;
+  border-radius:18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:1px!important;
+  font-size:10px!important;
+  line-height:1!important;
+  font-weight:850!important;
+  transform:none!important;
+  -webkit-transform:none!important;
+  white-space:nowrap!important;
+}
+
+#bottom-nav .navbtn span,
+#bottom-nav .navbtn.active span{
+  display:block!important;
+  width:28px!important;
+  height:28px!important;
+  min-width:28px!important;
+  min-height:28px!important;
+  max-width:28px!important;
+  max-height:28px!important;
+  margin:0 0 2px!important;
+  padding:0!important;
+  font-size:22px!important;
+  line-height:28px!important;
+  text-align:center!important;
+}
+
+#bottom-nav .navbtn.active{
+  background:linear-gradient(135deg,#df6bc0,#756fff)!important;
+  color:#fff!important;
+}
+
+/* ===== Uniform top action buttons across sections ===== */
+.monthly-top-actions .btn,
+.loan-top-actions .btn,
+.allocation-top-actions .btn,
+#monthly .topline > .actions .btn,
+#loans .topline > .actions .btn,
+#premiums .topline > .actions .btn{
+  min-height:46px!important;
+  height:46px!important;
+  padding:0 16px!important;
+  border-radius:14px!important;
+  font-size:12.5px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:430px){
+  #monthly .topline > .actions,
+  #loans .topline > .actions,
+  #premiums .topline > .actions{
+    width:100%!important;
+  }
+  #monthly .topline > .actions .btn,
+  #loans .topline > .actions .btn,
+  #premiums .topline > .actions .btn{
+    min-height:44px!important;
+    height:44px!important;
+    font-size:11.2px!important;
+    padding:0 10px!important;
+  }
+}
+
+/* ===== Compact live budget calculator ===== */
+#budget .topline{margin-bottom:8px!important}
+#budget .balance-hero{
+  padding:10px 12px!important;
+  margin-bottom:10px!important;
+  border-radius:16px!important;
+}
+#budget .balance-hero span{font-size:10px!important}
+#budget .balance-hero b{
+  font-size:22px!important;
+  margin-top:2px!important;
+  line-height:1.05!important;
+}
+#budget .budget-columns{
+  grid-template-columns:1fr 1fr!important;
+  gap:10px!important;
+}
+#budget .budget-card{
+  border-radius:16px!important;
+  padding:10px!important;
+}
+#budget .budget-card h3{
+  font-size:15px!important;
+  margin:0 0 2px!important;
+}
+#budget .budget-total{
+  font-size:10px!important;
+  margin:0 0 7px!important;
+}
+#budget .budget-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 122px 26px!important;
+  gap:6px!important;
+  align-items:center!important;
+  padding:7px 0!important;
+  margin:0!important;
+  border-bottom:1px dashed #dee6f1!important;
+}
+#budget .budget-row input{
+  min-height:34px!important;
+  height:34px!important;
+  border-radius:12px!important;
+  padding:6px 8px!important;
+  font-size:12px!important;
+}
+#budget .budget-card > .btn{
+  min-height:32px!important;
+  height:32px!important;
+  margin-top:8px!important;
+  font-size:10px!important;
+  padding:0 10px!important;
+}
+#budget .iconbtn{
+  width:26px!important;
+  height:26px!important;
+  min-height:26px!important;
+}
+
+@media(max-width:560px){
+  #budget .budget-columns{
+    grid-template-columns:1fr!important;
+  }
+}
+
+/* ===== Balanced visual scale — restore compact/elegant proportions ===== */
+:root{ --nav-h: 80px!important; }
+
+/* App shell stays fixed, only scale is reduced */
+#app-scroll{
+  bottom:var(--nav-h)!important;
+  padding:10px 8px 24px!important;
+}
+
+/* Bottom navigation back to the earlier compact proportions */
+#bottom-nav{
+  height:var(--nav-h)!important;
+  min-height:var(--nav-h)!important;
+}
+#bottom-nav .bottom-inner{
+  height:100%!important;
+  min-height:100%!important;
+  padding:6px 7px calc(5px + env(safe-area-inset-bottom))!important;
+  gap:3px!important;
+}
+#bottom-nav .navbtn,
+#bottom-nav .navbtn.active{
+  height:58px!important;
+  min-height:58px!important;
+  max-height:58px!important;
+  padding:6px 2px 5px!important;
+  border-radius:16px!important;
+  font-size:9.5px!important;
+  line-height:1!important;
+  font-weight:800!important;
+}
+#bottom-nav .navbtn span,
+#bottom-nav .navbtn.active span{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  min-height:24px!important;
+  max-width:24px!important;
+  max-height:24px!important;
+  font-size:20px!important;
+  line-height:24px!important;
+  margin-bottom:2px!important;
+}
+
+/* Top action buttons: match the original Monthly proportions */
+.monthly-top-actions .btn,
+.loan-top-actions .btn,
+.allocation-top-actions .btn,
+#monthly .topline > .actions .btn,
+#loans .topline > .actions .btn,
+#premiums .topline > .actions .btn{
+  min-height:34px!important;
+  height:34px!important;
+  padding:0 11px!important;
+  border-radius:11px!important;
+  font-size:10px!important;
+  font-weight:850!important;
+  line-height:1!important;
+}
+
+/* Debts has four controls; keep them compact enough for one row */
+#loans .loan-top-actions{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:1.35fr 1fr 1fr 1fr!important;
+  gap:6px!important;
+}
+#loans .loan-top-actions .btn{
+  width:100%!important;
+  min-width:0!important;
+  padding:0 4px!important;
+  font-size:9px!important;
+}
+
+/* Allocations top pair */
+#premiums .allocation-top-actions{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:7px!important;
+}
+
+/* Monthly top row keeps its familiar size */
+#monthly .monthly-top-actions{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:.95fr 1.05fr 1.55fr!important;
+  gap:7px!important;
+}
+
+/* Budget: compact, same visual language as Monthly */
+#budget .topline{margin-bottom:7px!important}
+#budget .balance-hero{
+  padding:9px 11px!important;
+  margin-bottom:9px!important;
+  border-radius:15px!important;
+}
+#budget .balance-hero span{
+  font-size:9.5px!important;
+}
+#budget .balance-hero b{
+  font-size:19px!important;
+  margin-top:2px!important;
+  line-height:1!important;
+}
+#budget .budget-columns{
+  grid-template-columns:1fr!important;
+  gap:9px!important;
+}
+#budget .budget-card{
+  border-radius:16px!important;
+  padding:10px 11px!important;
+}
+#budget .budget-card h3{
+  font-size:14px!important;
+  margin:0 0 2px!important;
+}
+#budget .budget-total{
+  font-size:10px!important;
+  margin:0 0 6px!important;
+}
+#budget .budget-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 128px 26px!important;
+  gap:6px!important;
+  align-items:center!important;
+  padding:7px 0!important;
+  margin:0!important;
+  border-bottom:1px dashed #dee6f1!important;
+}
+#budget .budget-row > input{
+  min-height:34px!important;
+  height:34px!important;
+  padding:6px 8px!important;
+  border-radius:11px!important;
+  font-size:12px!important;
+}
+#budget .budget-row .moneybox{
+  min-height:34px!important;
+  height:34px!important;
+  border-radius:12px!important;
+}
+#budget .budget-row .moneybox input{
+  min-height:32px!important;
+  height:32px!important;
+  font-size:12px!important;
+}
+#budget .budget-card > .btn{
+  min-height:31px!important;
+  height:31px!important;
+  margin-top:7px!important;
+  padding:0 9px!important;
+  font-size:9.5px!important;
+  border-radius:10px!important;
+}
+
+/* Keep section title/card sizing untouched */
+@media(max-width:430px){
+  #bottom-nav .navbtn,
+  #bottom-nav .navbtn.active{
+    height:58px!important;
+    min-height:58px!important;
+    max-height:58px!important;
+    font-size:9px!important;
+  }
+  #bottom-nav .navbtn span,
+  #bottom-nav .navbtn.active span{
+    width:24px!important;
+    height:24px!important;
+    min-width:24px!important;
+    min-height:24px!important;
+    max-width:24px!important;
+    max-height:24px!important;
+    font-size:20px!important;
+    line-height:24px!important;
+  }
+  #monthly .topline > .actions .btn,
+  #loans .topline > .actions .btn,
+  #premiums .topline > .actions .btn{
+    min-height:34px!important;
+    height:34px!important;
+    font-size:9.5px!important;
+  }
+  #loans .loan-top-actions .btn{
+    font-size:8.5px!important;
+    padding:0 2px!important;
+  }
+}
+
+/* Budget card header actions */
+#budget .budget-card-head{
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+}
+#budget .budget-card-head .btn{
+  min-height:31px!important;
+  height:31px!important;
+  padding:0 9px!important;
+  font-size:9.5px!important;
+  border-radius:10px!important;
+  white-space:nowrap!important;
+}
+#budget .budget-card-head .budget-total{
+  margin:2px 0 0!important;
+}
+
+</style>
+
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#f8f9fd">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Finance Vision">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+</head>
+<body>
+<div id="splash" class="splash">
+  <div class="currency-rain">
+    <span class="currency-drop cd1">$</span>
+    <span class="currency-drop cd2">€</span>
+    <span class="currency-drop cd3">₹</span>
+    <span class="currency-drop cd4">¥</span>
+    <span class="currency-drop cd5">£</span>
+    <span class="currency-drop cd6">₩</span>
+    <span class="currency-drop cd7">₽</span>
+    <span class="currency-drop cd8">د.إ</span>
+    <span class="currency-drop cd9">$</span>
+    <span class="currency-drop cd10">₹</span>
+    <span class="currency-drop cd11">€</span>
+    <span class="currency-drop cd12">¥</span>
+    <span class="currency-drop cd13">£</span>
+    <span class="currency-drop cd14">₩</span>
+    <span class="currency-drop cd15">₽</span>
+    <span class="currency-drop cd16">د.إ</span>
+    <span class="currency-drop cd17">₹</span>
+    <span class="currency-drop cd18">$</span>
+    <span class="currency-drop cd19">€</span>
+    <span class="currency-drop cd20">¥</span>
+  </div>
+
+  <div class="splash-center">
+    <div class="finance-vision-title">Finance Vision</div>
+    <div class="logo-wrap">
+      <img class="mark-img" src="./evisionsoft-logo.png" alt="Evisionsoft">
+      <div class="word">evisionsoft</div>
+      <div class="shine"></div>
+    </div>
+  </div>
+</div>
+
+<main id="app-scroll" class="app">
+<section id="overview" class="section active">
+  <div class="backup-bar">
+    <button class="btn" id="exportBtn">Export</button>
+    <button class="btn" id="importBtn">Import</button>
+    <input id="importFile" type="file" accept=".json,application/json" hidden>
+  </div>
+
+  <div class="panel">
+    <div class="title">12-month cash-flow outlook</div>
+    <div class="sub">Projected closing balance for each month.</div>
+    <svg id="cashChart" class="cash-chart" viewBox="0 0 640 180"></svg>
+  </div>
+
+  <div class="panel wealth-panel">
+    <div class="title">Net wealth</div>
+    <div class="sub">Annual flow, projected cash, assets and debt in one view.</div>
+
+    <div class="wealth-top-grid">
+      <div class="wealth-mini"><span>Annual income</span><b id="ovIncome">AED 0</b></div>
+      <div class="wealth-mini"><span>Annual expense</span><b id="ovExpense">AED 0</b></div>
+    </div>
+
+    <div class="nw-bars">
+      <div class="nw-row"><span>Assets + projected cash</span><b id="nwAssetsProjected">AED 0</b></div>
+      <div class="nw-track"><div id="nwAssetsBar" class="nw-fill nw-assets" style="width:0%"></div></div>
+      <div class="nw-row"><span>Total debts</span><b id="ovDebt">AED 0</b></div>
+      <div class="nw-track"><div id="nwDebtBar" class="nw-fill nw-debts" style="width:0%"></div></div>
+    </div>
+
+    <div class="nw-summary"><span>Net wealth</span><b id="ovNet">AED 0</b></div>
+  </div>
+
+  <div class="panel">
+    <div class="topline" style="margin:0">
+      <div><div class="title" style="font-size:16px">Negative cash-flow months</div><div id="ovNegative" class="sub">0 months</div></div>
+    </div>
+    <div id="ovNegativeList" class="sub"></div>
+  </div>
+</section>
+
+<section id="monthly" class="section">
+  <div class="topline">
+    <div><div class="title">Monthly cash flow</div><div class="sub">12 months from your chosen planning month.</div></div>
+    <div class="actions monthly-top-actions">
+      <button class="btn" onclick="App.openPlanSettings()">Plan settings</button>
+      <button class="btn primary" onclick="Reports.monthly()">Generate table</button>
+      <button class="btn" onclick="App.openRecurringExpense()">＋ Add recurring expense</button>
+    </div>
+  </div>
+  <div id="monthList"></div>
+</section>
+
+<section id="loans" class="section">
+  <div class="topline">
+    <div><div class="title">Debts</div><div class="sub">Loans, cards and money borrowed from family or friends.</div></div>
+    <div class="actions loan-top-actions">
+      <button class="btn primary" onclick="Reports.loans()">Generate table</button>
+      <button class="btn" onclick="App.toggleLoanForm()">＋ Add loan</button>
+      <button class="btn" onclick="App.toggleCardForm()">＋ Add card</button>
+      <button class="btn" onclick="App.openBorrowed()">＋ Borrowed</button>
+    </div>
+  </div>
+  <div id="loanForm" class="overlay">
+    <div class="dialog">
+      <h3>Add loan</h3>
+      <p>Enter the loan details. The repayment schedule will be calculated before saving.</p>
+
+    <div class="form-grid">
+      <label class="field wide"><span>Loan name</span><input id="loanName"></label>
+      <label class="field"><span>Currency</span><select id="loanCurrency"><option>AED</option><option>INR</option></select></label>
+      <label class="field"><span>Principal</span><input id="loanPrincipal" inputmode="decimal"></label>
+      <label class="field"><span>Start date</span><input id="loanStart" type="date"></label>
+      <label class="field"><span>First EMI date</span><input id="loanFirst" type="date"></label>
+      <label class="field"><span>Annual rate %</span><input id="loanRate" inputmode="decimal"></label>
+      <label class="field"><span>Tenure months</span><input id="loanTenure" inputmode="numeric"></label>
+      <label class="field"><span>Method</span><select id="loanMethod"><option value="monthly">Monthly reducing</option><option value="daily">Daily reducing</option><option value="flat">Flat rate</option></select></label>
+      <label class="field"><span>Known EMI (optional)</span><input id="loanEmi" inputmode="decimal"></label>
+    </div>
+    <div id="loanError" class="sub neg" style="margin-top:7px"></div>
+    <div class="form-actions"><button class="btn" onclick="App.toggleLoanForm(false)">Cancel</button><button class="btn primary" onclick="App.addLoan()">Add loan</button></div>
+
+    </div>
+  </div>
+  <div class="topline" style="margin-top:14px">
+    <div>
+      <div class="title" style="font-size:17px">Loans</div>
+      <div class="sub">Formal loans with calculated repayment schedules.</div>
+    </div>
+  </div>
+  <div id="loanList"></div>
+
+  <div class="topline" style="margin-top:18px">
+    <div><div class="title" style="font-size:17px">Credit cards</div><div class="sub">Current outstanding snapshot.</div></div>
+  </div>
+  <div id="cardForm" class="overlay">
+    <div class="dialog">
+      <h3>Add credit card</h3>
+      <p>Add the current card limit, outstanding amount and due date.</p>
+
+    <div class="form-grid">
+      <label class="field wide"><span>Card name</span><input id="cardName"></label><label class="field"><span>Currency</span><select id="cardCurrency"><option>AED</option><option>INR</option><option>USD</option><option>GBP</option><option>EUR</option></select></label>
+      <label class="field"><span>Credit limit</span><input id="cardLimit" inputmode="decimal"></label>
+      <label class="field"><span>Outstanding</span><input id="cardOutstanding" inputmode="decimal"></label>
+      <label class="field"><span>Due date</span><input id="cardDue" type="date"></label>
+    </div>
+    <div class="form-actions"><button class="btn" onclick="App.toggleCardForm(false)">Cancel</button><button class="btn primary" onclick="App.addCard()">Add card</button></div>
+
+    </div>
+  </div>
+  <div id="cardList"></div>
+
+  <div class="topline" style="margin-top:18px">
+    <div>
+      <div class="title" style="font-size:17px">Borrowed</div>
+      <div class="sub">Money borrowed from family or friends, with a planned repayment schedule.</div>
+    </div>
+  </div>
+  <div id="borrowedList"></div>
+</section>
+
+<section id="premiums" class="section">
+  <div class="topline">
+    <div><div class="title">Allocations</div><div class="sub">Premiums, subscriptions and assets in one place.</div></div>
+    <div class="actions allocation-top-actions">
+      <button class="btn primary" onclick="Reports.premiums()">Generate table</button>
+      <button class="btn" onclick="App.openAllocation()">＋ Add allocation</button>
+    </div>
+  </div>
+<div class="tabs">
+    <button id="premiumTabWealth" class="tab active" onclick="App.showPremiumTab('wealth')">Wealth</button>
+    <button id="premiumTabSubscription" class="tab" onclick="App.showPremiumTab('subscription')">Subscriptions</button>
+    <button id="premiumTabAssets" class="tab" onclick="App.showPremiumTab('assets')">Assets</button>
+  </div>
+  <div id="premiumWealth" class="tabpanel active"></div>
+  <div id="premiumSubscription" class="tabpanel"></div>
+  <div id="assetPanel" class="tabpanel">
+    <div class="panel">
+      <div class="topline" style="margin:0 0 8px"><div><div class="title" style="font-size:16px">Tracked assets</div><div class="sub">Values counted in net wealth.</div></div><button class="btn primary" onclick="App.addAsset()">＋ Add asset</button></div>
+      <div id="assetList"></div>
+    </div>
+  </div>
+</section>
+
+<section id="budget" class="section">
+  <div class="topline"><div><div class="title">Budget live calculator</div><div class="sub">Independent scratch calculator.</div></div><button class="btn danger" onclick="App.resetBudget()">Reset</button></div>
+  <div class="balance-hero"><span>Live balance</span><b id="budgetBalance">AED 0</b></div>
+  <div class="budget-columns">
+    <div class="budget-card">
+      <div class="topline budget-card-head" style="margin:0 0 6px">
+        <div><h3>Income</h3><div class="budget-total">Total <b id="budgetIncome">AED 0</b></div></div>
+        <button class="btn" onclick="App.addBudgetRow('income')">＋ Add income</button>
+      </div>
+      <div id="budgetIncomeRows"></div>
+    </div>
+    <div class="budget-card">
+      <div class="topline budget-card-head" style="margin:0 0 6px">
+        <div><h3>Expenses</h3><div class="budget-total">Total <b id="budgetExpense">AED 0</b></div></div>
+        <button class="btn" onclick="App.addBudgetRow('expense')">＋ Add expense</button>
+      </div>
+      <div id="budgetExpenseRows"></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<nav id="bottom-nav" class="bottom"><div class="bottom-inner">
+<button class="navbtn active" data-target="overview"><span>🏠</span>Overview</button>
+<button class="navbtn" data-target="monthly"><span>📅</span>Monthly</button>
+<button class="navbtn" data-target="loans"><span>📉</span>Debts</button>
+<button class="navbtn" data-target="premiums"><span>🛡️</span>Allocations</button>
+<button class="navbtn" data-target="budget"><span>🧮</span>Budget</button>
+</div></nav>
+
+<div id="planOverlay" class="overlay"><div class="dialog">
+<h3>Plan settings</h3><p>Choose the first month. Finance Vision will show exactly 12 months from this selection.</p>
+<div class="grid2">
+<label class="field"><span>Plan start month</span><select id="planStartSelect"></select></label>
+<label class="field"><span>Opening balance of first month</span><input id="initialOpening" inputmode="decimal"></label>
+</div>
+<div class="form-actions"><button class="btn" onclick="App.closePlanSettings()">Cancel</button><button class="btn primary" onclick="App.applyPlanSettings()">Apply</button></div>
+</div></div>
+
+<div id="recurringOverlay" class="overlay"><div class="dialog">
+<h3>Add recurring expense</h3><p>Add the expense automatically across the 12-month plan.</p>
+<div class="grid2">
+<label class="field"><span>Description</span><input id="recurringName"></label>
+<label class="field"><span>Amount</span><input id="recurringAmount" inputmode="decimal"></label>
+<label class="field"><span>First month</span><select id="recurringFirst"></select></label>
+<label class="field"><span>Frequency</span><select id="recurringCycle"><option value="1">Monthly</option><option value="3">Quarterly</option><option value="6">Half yearly</option><option value="12">Yearly</option></select></label>
+</div>
+<div class="form-actions"><button class="btn" onclick="App.closeRecurringExpense()">Cancel</button><button class="btn primary" onclick="App.addRecurringExpense()">Add recurring expense</button></div>
+</div></div>
+
+<div id="monthExpenseOverlay" class="overlay"><div class="dialog">
+<h3 id="monthExpenseTitle">Add expense</h3><p>This expense will be added only to this month.</p>
+<div class="grid2"><label class="field"><span>Description</span><input id="monthExpenseName"></label><label class="field"><span>Amount</span><input id="monthExpenseAmount" inputmode="decimal"></label></div>
+<div class="form-actions"><button class="btn" onclick="App.closeMonthExpense()">Cancel</button><button class="btn primary" onclick="App.addMonthExpense()">Add expense</button></div>
+</div></div>
+
+<div id="incomeOverlay" class="overlay"><div class="dialog">
+<h3 id="incomeTitle">Income</h3><p>Add one or more income lines for this month.</p>
+<div id="incomeRows"></div><button class="btn" onclick="App.addIncomeLine()">＋ Add another income</button>
+<div class="form-actions"><button class="btn primary" onclick="App.closeIncomeDialog()">Done</button></div>
+</div></div>
+
+<div id="borrowedOverlay" class="overlay"><div class="dialog">
+  <h3>Add borrowed money</h3>
+  <p>For informal borrowing from family or friends. This planner assumes no interest.</p>
+  <div class="form-grid">
+    <label class="field"><span>Currency</span>
+      <select id="borrowedCurrency" onchange="App.previewBorrowed()">
+        <option>AED</option><option>INR</option><option>USD</option><option>GBP</option><option>EUR</option>
+      </select>
+    </label>
+    <label class="field"><span>Borrowed amount</span><input id="borrowedAmount" inputmode="decimal" oninput="App.previewBorrowed()"></label>
+    <label class="field"><span>From</span><input id="borrowedFrom" placeholder="Friend / family member"></label>
+    <label class="field"><span>Purpose</span><input id="borrowedPurpose" placeholder="Purpose of borrowing"></label>
+    <label class="field"><span>First repayment date</span><input id="borrowedFirst" type="date"></label>
+    <label class="field"><span>Repayment frequency</span>
+      <select id="borrowedFrequency" onchange="App.previewBorrowed()">
+        <option value="1">Monthly</option>
+        <option value="3">Quarterly</option>
+        <option value="6">Half yearly</option>
+        <option value="12">Yearly</option>
+      </select>
+    </label>
+    <label class="field"><span>Borrowing term (months)</span><input id="borrowedTerm" inputmode="numeric" onchange="App.previewBorrowed()" oninput="App.previewBorrowed()"></label>
+    <div class="field">
+      <span>Calculated payment</span>
+      <div id="borrowedEmiPreview" class="metric" style="min-height:38px;padding:8px 10px"><b style="font-size:14px;margin:0">AED 0</b></div>
+    </div>
+  </div>
+  <div id="borrowedPreviewText" class="sub" style="margin-top:8px"></div>
+  <div class="form-actions">
+    <button class="btn" onclick="App.closeBorrowed()">Cancel</button>
+    <button class="btn primary" onclick="App.saveBorrowed()">Save borrowed</button>
+  </div>
+</div></div>
+
+<div id="allocationOverlay" class="overlay"><div class="dialog">
+  <h3 id="allocationDialogTitle">Add allocation</h3>
+  <p>Create a premium, subscription or asset allocation.</p>
+  <input id="allocationEditId" type="hidden">
+  <div class="form-grid">
+    <label class="field"><span>Type</span>
+      <select id="allocationType" onchange="App.allocationTypeChanged()">
+        <option value="premium">Premium</option>
+        <option value="subscription">Subscription</option>
+        <option value="assets">Asset</option>
+      </select>
+    </label>
+    <label class="field"><span>Currency</span>
+      <select id="allocationCurrency" onchange="App.allocationNetWorthChanged()"><option>AED</option><option>INR</option><option>USD</option><option>GBP</option><option>EUR</option></select>
+    </label>
+    <label class="field wide"><span>Name / description</span><input id="allocationName"></label>
+    <label class="field"><span>Amount / value</span><input id="allocationAmount" inputmode="decimal"></label>
+    <label class="field"><span>Calculate in net wealth?</span>
+      <select id="allocationNetWorth" onchange="App.allocationNetWorthChanged()"><option value="no">No</option><option value="yes">Yes</option></select>
+    </label>
+    <label class="field" id="allocationAedValueWrap" style="display:none"><span>Net-wealth value in AED</span><input id="allocationAedValue" inputmode="decimal" placeholder="AED equivalent"></label>
+    <label class="field allocation-schedule"><span>First payment date</span><input id="allocationFirst" type="date"></label>
+    <label class="field allocation-schedule"><span>Cycle</span>
+      <select id="allocationCycle"><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="halfyearly">Half yearly</option><option value="yearly">Yearly</option></select>
+    </label>
+  </div>
+  <div class="form-actions">
+    <button class="btn" onclick="App.closeAllocation()">Cancel</button>
+    <button class="btn primary" onclick="App.saveAllocation()">Save allocation</button>
+  </div>
+</div></div>
+
+<div id="reportView" class="report-view">
+<div class="report-head"><button class="btn" onclick="Reports.close()">‹ Back to Finance Vision</button><button class="btn primary" onclick="Reports.share()">Share image</button></div>
+<img id="reportImage" class="report-image" alt="Generated finance report">
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+(function(){
+"use strict";
+const STORE="financeVision_state_v1";
+const APP_NAME="Finance Vision";
+const VERSION=1;
+const BACKUP_SCHEMA=1;
+let activeIncomeMonth=null,activeExpenseMonth=null,activePremiumTab="premium";const deleteModes=new Set();const monthUndo={};
+
+function uid(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function n(v){const x=parseFloat(String(v??"").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(x)?x:0}
+function nonneg(v){return Math.max(0,n(v))}
+function round2(v){return Math.round((Number(v)+Number.EPSILON)*100)/100}
+function money(v,c="AED"){v=round2(v);const neg=v<0,num=Math.abs(v).toLocaleString("en-AE",{minimumFractionDigits:0,maximumFractionDigits:2});return (neg?"- ":"")+(c==="INR"?"₹":"AED ")+num}
+function esc(s){return String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
+function today(){return new Date().toISOString().slice(0,10)}
+function currentMonth(){return today().slice(0,7)}
+function monthKeyAdd(key,off){const [y,m]=key.split("-").map(Number),d=new Date(Date.UTC(y,m-1+off,1));return d.toISOString().slice(0,7)}
+function monthLabel(key){const [y,m]=key.split("-").map(Number);return new Date(Date.UTC(y,m-1,1)).toLocaleDateString("en-GB",{month:"short",year:"numeric",timeZone:"UTC"})}
+function parseDate(s){if(!s)return null;const [y,m,d]=s.split("-").map(Number);if(!y||!m||!d)return null;return new Date(Date.UTC(y,m-1,d))}
+function iso(d){return d.toISOString().slice(0,10)}
+function addMonths(date,months){const y=date.getUTCFullYear(),m=date.getUTCMonth(),day=date.getUTCDate(),first=new Date(Date.UTC(y,m+months,1)),last=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate();return new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth(),Math.min(day,last)))}
+function daysBetween(a,b){return Math.max(1,Math.round((b-a)/86400000))}
+function blankMonth(key){return{key,incomes:[],expenses:[]}}
+function defaultState(){const start=currentMonth();return{settings:{planningStart:start,initialOpening:0,inrToAed:0},monthly:{months:Array.from({length:12},(_,i)=>blankMonth(monthKeyAdd(start,i)))},assets:[],loans:[],cards:[],borrowed:[],premiums:[],budget:{income:[],expense:[]}}}
+function normalize(s){
+ const d=defaultState();if(!s||typeof s!=="object")return d;
+ const start=/^\d{4}-\d{2}$/.test(s.settings?.planningStart||"")?s.settings.planningStart:d.settings.planningStart,byKey={};
+ (s.monthly?.months||[]).forEach(m=>{if(m?.key)byKey[m.key]=m});
+ return{
+  settings:{planningStart:start,initialOpening:n(s.settings?.initialOpening),inrToAed:nonneg(s.settings?.inrToAed)},
+  monthly:{months:Array.from({length:12},(_,i)=>{const key=monthKeyAdd(start,i),m=byKey[key]||blankMonth(key);return{key,incomes:Array.isArray(m.incomes)?m.incomes:[],expenses:Array.isArray(m.expenses)?m.expenses:[]}})},
+  assets:Array.isArray(s.assets)?s.assets.map(a=>({...a,currency:a.currency||"AED",countNetWorth:(a.countNetWorth!==false),netWorthAed:nonneg(a.netWorthAed)})):[],
+  loans:Array.isArray(s.loans)?s.loans:[],
+  cards:Array.isArray(s.cards)?s.cards.map(c=>({...c,currency:c.currency||"AED"})):[],
+  borrowed:Array.isArray(s.borrowed)?s.borrowed:[],
+  premiums:Array.isArray(s.premiums)?s.premiums.map(p=>({...p,
+      type:(p.type==="wealth"||p.type==="protection")?(p.type==="wealth"?"premium":"subscription"):(p.type||"premium"),
+      currency:p.currency||"AED",
+      countNetWorth:!!p.countNetWorth,
+      netWorthAed:nonneg(p.netWorthAed)
+    })):[],
+  budget:{income:Array.isArray(s.budget?.income)?s.budget.income:[],expense:Array.isArray(s.budget?.expense)?s.budget.expense:[]}
+ };
+}
+let state;
+try{state=normalize(JSON.parse(localStorage.getItem(STORE)||"null"))}catch(e){state=defaultState()}
+function save(){localStorage.setItem(STORE,JSON.stringify(state))}
+function calcMonths(){let opening=n(state.settings.initialOpening);return state.monthly.months.map(m=>{const income=round2(m.incomes.reduce((s,x)=>s+nonneg(x.amount),0)),expense=round2(m.expenses.reduce((s,x)=>s+nonneg(x.amount),0)),close=round2(opening+income-expense),o={key:m.key,opening:round2(opening),income,expense,close};opening=close;return o})}
+function annual(){const m=calcMonths();return{income:round2(m.reduce((s,x)=>s+x.income,0)),expense:round2(m.reduce((s,x)=>s+x.expense,0)),closing:m.length?m[m.length-1].close:n(state.settings.initialOpening),months:m}}
+function amountAED(v,c){return(c||"AED")==="INR"?nonneg(v)*nonneg(state.settings.inrToAed):nonneg(v)}
+function loanRemaining(l){if(l.status==="completed"||l.status==="preclosed")return 0;if(l.snapshot)return nonneg(l.remaining);const rows=l.rows||[];if(!rows.length)return nonneg(l.principal);const p=rows.filter(r=>r.date<=today());return p.length?nonneg(p[p.length-1].remaining):nonneg(l.principal)}
+function borrowedRemaining(b){
+  if(b.status==="completed")return 0;
+  const rows=Array.isArray(b.rows)?b.rows:[];
+  if(!rows.length)return nonneg(b.amount);
+  const past=rows.filter(r=>r.date<=today());
+  if(!past.length)return nonneg(b.amount);
+  return nonneg(past[past.length-1].remaining);
+}
+function totalDebt(){
+  const loans=state.loans.reduce((s,l)=>s+amountAED(loanRemaining(l),l.currency),0);
+  const cards=state.cards.reduce((s,c)=>s+(c.status?0:((c.currency||"AED")==="AED"?nonneg(c.outstanding):nonneg(c.outstandingAed))),0);
+  const borrowed=state.borrowed.reduce((s,b)=>s+((b.currency||"AED")==="AED"?borrowedRemaining(b):nonneg(b.remainingAed)),0);
+  return round2(loans+cards+borrowed);
+}
+function allocationAedValue(x){
+  if(!x.countNetWorth)return 0;
+  if((x.currency||"AED")==="AED")return nonneg(x.amount);
+  return nonneg(x.netWorthAed);
+}
+function totalAssets(){
+  const assetTotal=state.assets.reduce((s,a)=>s+allocationAedValue(a),0);
+  const allocationTotal=state.premiums.reduce((s,p)=>s+allocationAedValue(p),0);
+  return round2(assetTotal+allocationTotal);
+}
+function borrowedPlan(amount,firstDate,frequencyMonths,termMonths){
+  amount=nonneg(amount);frequencyMonths=Math.max(1,Math.round(nonneg(frequencyMonths)));termMonths=Math.max(1,Math.round(nonneg(termMonths)));
+  const first=parseDate(firstDate);
+  if(!amount||!first||!termMonths)return{payment:0,count:0,rows:[]};
+  const count=Math.max(1,Math.ceil(termMonths/frequencyMonths));
+  const payment=round2(amount/count);
+  let remaining=amount;
+  const rows=[];
+  for(let i=0;i<count;i++){
+    const date=addMonths(first,i*frequencyMonths);
+    const pay=i===count-1?round2(remaining):payment;
+    remaining=round2(Math.max(0,remaining-pay));
+    rows.push({date:iso(date),payment:pay,remaining});
+  }
+  return{payment,count,rows};
+}
+function premiumSchedule(p){const first=parseDate(p.firstDate);if(!first)return[];const step=p.cycle==="quarterly"?3:p.cycle==="halfyearly"?6:p.cycle==="yearly"?12:1,count=p.cycle==="yearly"?1:p.cycle==="halfyearly"?2:p.cycle==="quarterly"?4:12;let acc=0;return Array.from({length:count},(_,i)=>{acc=round2(acc+nonneg(p.amount));return{date:iso(addMonths(first,i*step)),amount:nonneg(p.amount),accumulated:acc}})}
+function generateLoanSchedule(cfg){
+ const P=nonneg(cfg.principal),rate=nonneg(cfg.rate),months=Math.round(nonneg(cfg.tenure)),start=parseDate(cfg.start),first=parseDate(cfg.firstEmi);
+ if(!P||!months||!start||!first||first<=start)throw new Error("Enter valid principal, dates and tenure.");
+ let emi=nonneg(cfg.emi),balance=P,prev=start,rows=[],mr=rate/1200;
+ if(cfg.method==="monthly"&&!emi)emi=mr?P*mr/(1-Math.pow(1+mr,-months)):P/months;
+ if(cfg.method==="flat"&&!emi)emi=(P+P*(rate/100)*(months/12))/months;
+ if(cfg.method==="daily"&&!emi){function rem(pay){let b=P,p=start;for(let i=0;i<months;i++){const dt=addMonths(first,i);b=b+b*(rate/100/365)*daysBetween(p,dt)-pay;p=dt}return b}let lo=0,hi=P/months*2+P*.1;while(rem(hi)>0)hi*=1.5;for(let i=0;i<70;i++){const mid=(lo+hi)/2;if(rem(mid)>0)lo=mid;else hi=mid}emi=hi}
+ const flat=P*(rate/100)*(months/12)/months;
+ for(let i=0;i<months&&balance>.005;i++){const dt=addMonths(first,i);let interest=cfg.method==="monthly"?balance*mr:cfg.method==="daily"?balance*(rate/100/365)*daysBetween(prev,dt):flat,payment=emi,principal=payment-interest;if(principal<=0)throw new Error("EMI is too low.");if(principal>balance){principal=balance;payment=interest+principal}balance=Math.max(0,balance-principal);rows.push({date:iso(dt),payment:round2(payment),interest:round2(interest),principal:round2(principal),remaining:round2(balance)});prev=dt}
+ if(balance>.01)throw new Error("Loan does not finish within the selected tenure.");return{emi:round2(emi),rows}
+}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),1800)}
+function setText(id,t){const e=document.getElementById(id);if(e)e.textContent=t}
+function pn(id,v){const e=document.getElementById(id);if(!e)return;e.classList.toggle("neg",v<0);e.classList.toggle("pos",v>=0)}
+
+function snapshotMonth(i){
+  const m=state.monthly.months[i];
+  monthUndo[i]=JSON.stringify({incomes:m.incomes,expenses:m.expenses});
+}
+function restoreMonth(i){
+  if(!monthUndo[i]){toast("Nothing to undo");return}
+  const snap=JSON.parse(monthUndo[i]);
+  state.monthly.months[i].incomes=snap.incomes;
+  state.monthly.months[i].expenses=snap.expenses;
+  delete monthUndo[i];
+  renderAll();
+  toast("Last month change undone");
+}
+function renderAll(){renderOverview();renderMonthly();renderLoans();renderCards();renderBorrowed();renderPremiums();renderAssets();renderBudget();save()}
+function renderOverview(){
+ const a=annual(),assets=totalAssets(),projected=a.closing,ap=round2(assets+projected),debt=totalDebt(),net=round2(ap-debt);
+ setText("ovIncome",money(a.income));setText("ovExpense",money(a.expense));setText("nwAssetsProjected",money(ap));setText("ovDebt",money(debt));setText("ovNet",money(net));pn("ovNet",net);
+ const max=Math.max(Math.abs(ap),debt,1);document.getElementById("nwAssetsBar").style.width=Math.min(100,Math.abs(ap)/max*100)+"%";document.getElementById("nwDebtBar").style.width=Math.min(100,debt/max*100)+"%";
+
+ const neg=a.months.filter(x=>x.close<0);setText("ovNegative",neg.length+" month"+(neg.length===1?"":"s"));document.getElementById("ovNegativeList").innerHTML=neg.map(x=>esc(monthLabel(x.key))+" · <span class='neg'>"+esc(money(x.close))+"</span>").join("<br>");
+ drawChart(a.months);
+}
+function drawChart(months){const svg=document.getElementById("cashChart"),w=640,h=180,p=28,vals=months.map(x=>x.close),max=Math.max(...vals,0),min=Math.min(...vals,0),range=Math.max(max-min,1),pts=vals.map((v,i)=>[p+i*(w-2*p)/Math.max(vals.length-1,1),p+(max-v)*(h-2*p-20)/range]),d=pts.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+","+q[1].toFixed(1)).join(" "),y0=p+max*(h-2*p-20)/range,labels=months.map((m,i)=>`<text x="${pts[i][0]}" y="169" text-anchor="middle">${monthLabel(m.key).split(" ")[0]}</text>`).join("");svg.innerHTML=`<line x1="${p}" y1="149" x2="${w-p}" y2="149" class="axis"/><line x1="${p}" y1="${y0}" x2="${w-p}" y2="${y0}" class="zero"/><path d="${d}" class="trend"/>${labels}`}
+function renderMonthly(){
+ const c=calcMonths(),root=document.getElementById("monthList");
+ root.innerHTML=state.monthly.months.map((m,i)=>{
+   const x=c[i],done=m.expenses.filter(e=>e.done).length,totalEntries=m.expenses.length,delMode=deleteModes.has(i);
+
+   const incomeRows=m.incomes.map(inc=>`<div class="income-row">
+     <div class="entry-type">IN</div>
+     <span class="income-name">${esc(inc.name)}</span>
+     <div class="moneybox"><span>AED</span><input class="income-amount" data-income-id="${esc(inc.id)}" inputmode="decimal" value="${round2(inc.amount)}"></div>
+     <button class="iconbtn delete-x" onclick="App.deleteIncomeInline(${i},'${esc(inc.id)}')">×</button>
+   </div>`).join("");
+
+   const expenseRows=m.expenses.map(e=>`<div class="expense-row">
+     <input class="check" type="checkbox" ${e.done?"checked":""} onchange="App.setExpenseDone(${i},'${esc(e.id)}',this.checked)">
+     <span class="expense-name">${esc(e.name)}</span>
+     <div class="moneybox"><span>AED</span><input class="expense-amount" data-expense-id="${esc(e.id)}" inputmode="decimal" value="${round2(e.amount)}"></div>
+     <button class="iconbtn delete-x" onclick="App.deleteExpense(${i},'${esc(e.id)}')">×</button>
+   </div>`).join("");
+
+   return`<details class="panel month-card ${delMode?"delete-mode":""}" data-month-index="${i}">
+     <summary>
+       <div>
+         <strong>${esc(monthLabel(m.key))}</strong>
+         <div class="mcompleted">${done}/${totalEntries} completed</div>
+       </div>
+       <div class="mmetric"><span>Opening</span><b>${esc(money(x.opening))}</b></div>
+       <div class="mmetric"><span>Income</span><b>${esc(money(x.income))}</b></div>
+       <div class="mmetric"><span>Expense</span><b>${esc(money(x.expense))}</b></div>
+       <div class="mmetric"><span>Closing</span><b class="${x.close<0?"neg":"pos"}">${esc(money(x.close))}</b></div>
+       <div>⌄</div>
+     </summary>
+     <div class="body">
+       <div class="sub" style="font-weight:850;font-size:12px;margin:4px 0 5px">Income details</div>
+       ${incomeRows || '<div class="empty">No income entries.</div>'}
+       <div class="sub" style="font-weight:850;font-size:12px;margin:12px 0 5px">Expense details</div>
+       ${expenseRows || '<div class="empty">No expense entries.</div>'}
+       <div class="month-actions">
+         <button class="btn" onclick="App.openIncomeDialog(${i})">＋ Income</button>
+         <button class="btn" onclick="App.openMonthExpense(${i})">＋ Expense</button>
+         <button class="btn danger" onclick="App.toggleDeleteMode(${i})">${delMode?"Done deleting":"Delete entry"}</button>
+         <button class="btn primary" onclick="App.updateMonth(${i})">Update</button>
+         <button class="btn" onclick="App.undoMonth(${i})">Undo</button>
+       </div>
+     </div>
+   </details>`;
+ }).join("");
+}function renderLoans(){const root=document.getElementById("loanList");root.innerHTML=state.loans.length?state.loans.map(l=>{const rem=loanRemaining(l),rows=l.rows||[],st=l.status||"active",schedule=rows.length?`<details><summary class="sub" style="padding:9px 0;font-weight:800">Repayment schedule</summary><div style="overflow:auto"><table class="loan-table"><thead><tr><th>Date</th><th>Payment</th><th>Interest</th><th>Principal</th><th>Remaining</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${money(r.payment,l.currency)}</td><td>${money(r.interest,l.currency)}</td><td>${money(r.principal,l.currency)}</td><td>${money(r.remaining,l.currency)}</td></tr>`).join("")}</tbody></table></div></details>`:"";return`<details class="panel loan-card"><summary><div><strong>${esc(l.name)}</strong><small>${round2(l.rate||0)}% ${l.endDate?"• ends "+esc(l.endDate.slice(0,7)):""}</small></div><div class="summary-right"><span>Remaining</span><b>${money(rem,l.currency)}</b><span class="status ${st==="completed"?"done":st==="preclosed"?"pre":""}">${st}</span></div><div>⌄</div></summary><div class="body"><div class="grid2"><div class="metric"><span>EMI</span><b>${money(l.emi||0,l.currency)}</b></div><div class="metric"><span>Method</span><b style="font-size:13px">${esc(l.snapshot?"Imported snapshot":l.method||"monthly")}</b></div></div>${schedule}<div class="month-actions"><button class="btn" onclick="App.setLoanStatus('${esc(l.id)}','active')">Reopen</button><button class="btn green" onclick="App.setLoanStatus('${esc(l.id)}','completed')">Completed</button><button class="btn" onclick="App.setLoanStatus('${esc(l.id)}','preclosed')">Pre-close</button><button class="btn danger" onclick="App.deleteLoan('${esc(l.id)}')">Delete</button></div></div></details>`}).join(""):'<div class="panel empty">No loans yet.</div>'}
+function renderCards(){document.getElementById("cardList").innerHTML=state.cards.length?state.cards.map(c=>`<div class="panel"><div class="topline" style="margin:0"><div><strong>${esc(c.name)}</strong><div class="sub">${esc(c.currency||"AED")} • Due ${esc(c.dueDate||"—")}</div></div><span class="status ${c.status?"done":""}">${c.status||"active"}</span></div><div class="grid2"><label class="field"><span>Limit</span><input inputmode="decimal" value="${round2(c.limit)}" onchange="App.editCard('${esc(c.id)}','limit',this.value)"></label><label class="field"><span>Outstanding</span><input inputmode="decimal" value="${round2(c.outstanding)}" onchange="App.editCard('${esc(c.id)}','outstanding',this.value)"></label></div><div class="month-actions"><button class="btn" onclick="App.toggleCardStatus('${esc(c.id)}')">${c.status?"Reopen":"Mark paid"}</button><button class="btn danger" onclick="App.deleteCard('${esc(c.id)}')">Delete</button></div></div>`).join(""):'<div class="panel empty">No credit cards yet.</div>'}
+function allocationCard(x,kind){
+ const isAsset=kind==="assets";
+ const schedule=isAsset?[]:premiumSchedule(x);
+ const planned=schedule.length?schedule[schedule.length-1].accumulated:0;
+ const nw=x.countNetWorth?`<span class="status done">Net wealth</span>`:`<span class="status">Not in net wealth</span>`;
+ const details=isAsset
+   ? `<div class="grid2"><div class="metric"><span>Value</span><b>${money(x.amount,x.currency||"AED")}</b></div><div class="metric"><span>Net wealth AED</span><b>${money(allocationAedValue(x))}</b></div></div>`
+   : `<div class="grid2"><div class="metric"><span>Payment</span><b>${money(x.amount,x.currency||"AED")}</b></div><div class="metric"><span>12-mo planned</span><b>${money(planned,x.currency||"AED")}</b></div></div>
+      <table class="premium-table"><thead><tr><th>Date</th><th>Amount</th><th>Accumulated</th></tr></thead><tbody>${schedule.map(r=>`<tr><td>${r.date}</td><td>${money(r.amount,x.currency||"AED")}</td><td>${money(r.accumulated,x.currency||"AED")}</td></tr>`).join("")}</tbody></table>`;
+ return `<details class="panel premium-card allocation-card"><summary><div><strong>${esc(x.name)}</strong><small>${esc(x.currency||"AED")} • ${isAsset?"asset":esc(x.cycle||"")}</small></div><div class="summary-right">${nw}<span>Amount</span><b>${money(x.amount,x.currency||"AED")}</b></div><div>⌄</div></summary><div class="body">${details}<div class="allocation-edit-row"><button class="btn" onclick="App.editAllocation('${kind}','${esc(x.id)}')">Edit</button></div></div></details>`;
+}
+function renderBorrowed(){
+ const root=document.getElementById("borrowedList");
+ root.innerHTML=state.borrowed.length?state.borrowed.map(b=>{
+   const rem=borrowedRemaining(b),rows=b.rows||[];
+   const schedule=rows.length?`<details><summary class="sub" style="padding:9px 0;font-weight:800">Planned repayment schedule</summary><div style="overflow:auto"><table class="loan-table"><thead><tr><th>Date</th><th>Payment</th><th>Remaining</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${money(r.payment,b.currency)}</td><td>${money(r.remaining,b.currency)}</td></tr>`).join("")}</tbody></table></div></details>`:"";
+   return`<details class="panel loan-card"><summary><div><strong>${esc(b.from||"Borrowed")}</strong><small>${esc(b.currency||"AED")} • ${esc(b.purpose||"No purpose entered")}</small></div><div class="summary-right"><span>Remaining</span><b>${money(rem,b.currency)}</b><span class="status ${b.status==="completed"?"done":""}">${b.status||"active"}</span></div><div>⌄</div></summary><div class="body">
+     <div class="grid2">
+       <div class="metric"><span>Borrowed amount</span><b>${money(b.amount,b.currency)}</b></div>
+       <div class="metric"><span>Planned payment</span><b>${money(b.payment,b.currency)}</b></div>
+       <div class="metric"><span>Frequency</span><b style="font-size:13px">${esc(b.frequencyLabel)}</b></div>
+       <div class="metric"><span>Term</span><b style="font-size:13px">${b.termMonths} months</b></div>
+     </div>
+     ${schedule}
+     <div class="month-actions"><button class="btn" onclick="App.setBorrowedStatus('${esc(b.id)}','active')">Reopen</button><button class="btn green" onclick="App.setBorrowedStatus('${esc(b.id)}','completed')">Completed</button><button class="btn danger" onclick="App.deleteBorrowed('${esc(b.id)}')">Delete</button></div>
+   </div></details>`;
+ }).join(""):'<div class="panel empty">No borrowed money yet.</div>';
+}
+function renderPremiums(){
+ const premiums=state.premiums.filter(p=>p.type==="premium");
+ const subs=state.premiums.filter(p=>p.type==="subscription");
+ document.getElementById("premiumPremium").innerHTML=premiums.length?premiums.map(p=>allocationCard(p,"premium")).join(""):'<div class="panel empty">No premiums yet.</div>';
+ document.getElementById("premiumSubscription").innerHTML=subs.length?subs.map(p=>allocationCard(p,"subscription")).join(""):'<div class="panel empty">No subscriptions yet.</div>';
+}
+function renderAssets(){
+ document.getElementById("assetList").innerHTML=state.assets.length?state.assets.map(a=>allocationCard(a,"assets")).join(""):'<div class="panel empty">No assets yet.</div>';
+}
+function renderBudget(){
+ const inc=round2(state.budget.income.reduce((s,x)=>s+nonneg(x.amount),0)),
+       exp=round2(state.budget.expense.reduce((s,x)=>s+nonneg(x.amount),0)),
+       bal=round2(inc-exp);
+ setText("budgetIncome",money(inc));
+ setText("budgetExpense",money(exp));
+ setText("budgetBalance",money(bal));
+ pn("budgetBalance",bal);
+
+ ["income","expense"].forEach(type=>{
+   const root=document.getElementById(type==="income"?"budgetIncomeRows":"budgetExpenseRows");
+   root.innerHTML=state.budget[type].map(x=>`<div class="budget-row">
+     <input value="${esc(x.name)}" placeholder="Description" onchange="App.editBudget('${type}','${esc(x.id)}','name',this.value)">
+     <div class="moneybox"><span>AED</span><input inputmode="decimal" value="${round2(x.amount)}" onchange="App.editBudget('${type}','${esc(x.id)}','amount',this.value)"></div>
+     <button class="iconbtn" onclick="App.deleteBudget('${type}','${esc(x.id)}')">×</button>
+   </div>`).join("");
+ });
+}function populateMonthDropdown(select,selected,range=48){select.innerHTML="";const start=monthKeyAdd(currentMonth(),-12);for(let i=0;i<range;i++){const k=monthKeyAdd(start,i),o=document.createElement("option");o.value=k;o.textContent=monthLabel(k);if(k===selected)o.selected=true;select.appendChild(o)}}
+
+window.App={
+ openPlanSettings(){populateMonthDropdown(document.getElementById("planStartSelect"),state.settings.planningStart,60);document.getElementById("initialOpening").value=round2(state.settings.initialOpening);document.getElementById("planOverlay").classList.add("show")},
+ closePlanSettings(){document.getElementById("planOverlay").classList.remove("show")},
+ applyPlanSettings(){const start=document.getElementById("planStartSelect").value,opening=n(document.getElementById("initialOpening").value),changed=start!==state.settings.planningStart,has=state.monthly.months.some(m=>m.incomes.length||m.expenses.length);if(changed&&has&&!confirm("Changing the start month creates a new empty 12-month plan. Continue?"))return;state.settings.planningStart=start;state.settings.initialOpening=round2(opening);if(changed)state.monthly.months=Array.from({length:12},(_,i)=>blankMonth(monthKeyAdd(start,i)));this.closePlanSettings();renderAll()},
+ openRecurringExpense(){document.getElementById("recurringName").value="";document.getElementById("recurringAmount").value="";const s=document.getElementById("recurringFirst");s.innerHTML=state.monthly.months.map((m,i)=>`<option value="${i}">${esc(monthLabel(m.key))}</option>`).join("");document.getElementById("recurringOverlay").classList.add("show")},
+ closeRecurringExpense(){document.getElementById("recurringOverlay").classList.remove("show")},
+ addRecurringExpense(){const name=document.getElementById("recurringName").value.trim(),amount=nonneg(document.getElementById("recurringAmount").value),first=Number(document.getElementById("recurringFirst").value),step=Number(document.getElementById("recurringCycle").value);if(!name||!amount){alert("Enter description and amount.");return}for(let i=first;i<12;i+=step){snapshotMonth(i);state.monthly.months[i].expenses.push({id:uid("E"),name,amount,done:false});}this.closeRecurringExpense();renderAll()},
+ openMonthExpense(i){activeExpenseMonth=i;document.getElementById("monthExpenseTitle").textContent="Add expense — "+monthLabel(state.monthly.months[i].key);document.getElementById("monthExpenseName").value="";document.getElementById("monthExpenseAmount").value="";document.getElementById("monthExpenseOverlay").classList.add("show")},
+ closeMonthExpense(){document.getElementById("monthExpenseOverlay").classList.remove("show");activeExpenseMonth=null},
+ addMonthExpense(){if(activeExpenseMonth===null)return;const name=document.getElementById("monthExpenseName").value.trim(),amount=nonneg(document.getElementById("monthExpenseAmount").value);if(!name||!amount){alert("Enter description and amount.");return}snapshotMonth(activeExpenseMonth);state.monthly.months[activeExpenseMonth].expenses.push({id:uid("E"),name,amount,done:false});this.closeMonthExpense();renderAll()},
+ openIncomeDialog(i){activeIncomeMonth=i;document.getElementById("incomeTitle").textContent=monthLabel(state.monthly.months[i].key)+" income";renderIncomeRows();document.getElementById("incomeOverlay").classList.add("show")},
+ closeIncomeDialog(){document.getElementById("incomeOverlay").classList.remove("show");activeIncomeMonth=null;renderAll()},
+ addIncomeLine(){if(activeIncomeMonth===null)return;snapshotMonth(activeIncomeMonth);state.monthly.months[activeIncomeMonth].incomes.push({id:uid("I"),name:"Income",amount:0});renderIncomeRows();save()},
+ setIncome(i,id,f,v){const x=state.monthly.months[i].incomes.find(x=>x.id===id);if(x){snapshotMonth(i);x[f]=f==="amount"?nonneg(v):v;renderAll();renderIncomeRows()}},
+ deleteIncome(i,id){snapshotMonth(i);state.monthly.months[i].incomes=state.monthly.months[i].incomes.filter(x=>x.id!==id);renderIncomeRows();renderAll()},
+ updateMonth(i){
+   const card=document.querySelector('.month-card[data-month-index="'+i+'"]');
+   if(!card)return;
+   snapshotMonth(i);
+   card.querySelectorAll(".income-amount").forEach(inp=>{
+     const x=state.monthly.months[i].incomes.find(e=>e.id===inp.dataset.incomeId);
+     if(x)x.amount=nonneg(inp.value);
+   });
+   card.querySelectorAll(".expense-amount").forEach(inp=>{
+     const x=state.monthly.months[i].expenses.find(e=>e.id===inp.dataset.expenseId);
+     if(x)x.amount=nonneg(inp.value);
+   });
+   renderAll();
+   toast("Month updated");
+ },
+ toggleDeleteMode(i){if(deleteModes.has(i))deleteModes.delete(i);else deleteModes.add(i);renderMonthly()},
+ deleteIncomeInline(i,id){snapshotMonth(i);state.monthly.months[i].incomes=state.monthly.months[i].incomes.filter(x=>x.id!==id);renderAll()},
+ undoMonth(i){restoreMonth(i)},
+ setExpenseDone(i,id,v){const x=state.monthly.months[i].expenses.find(e=>e.id===id);if(x){snapshotMonth(i);x.done=!!v;renderAll()}},
+ deleteExpense(i,id){snapshotMonth(i);state.monthly.months[i].expenses=state.monthly.months[i].expenses.filter(e=>e.id!==id);renderAll()},
+ clearMonth(i){if(confirm("Clear all income and expenses from this month?")){snapshotMonth(i);state.monthly.months[i].incomes=[];state.monthly.months[i].expenses=[];renderAll()}},
+ openBorrowed(){
+   ["borrowedAmount","borrowedFrom","borrowedPurpose","borrowedFirst","borrowedTerm"].forEach(id=>document.getElementById(id).value="");
+   document.getElementById("borrowedCurrency").value="AED";
+   document.getElementById("borrowedFrequency").value="1";
+   this.previewBorrowed();
+   document.getElementById("borrowedOverlay").classList.add("show");
+ },
+ closeBorrowed(){document.getElementById("borrowedOverlay").classList.remove("show")},
+ previewBorrowed(){
+   const currency=document.getElementById("borrowedCurrency")?.value||"AED";
+   const amount=nonneg(document.getElementById("borrowedAmount")?.value);
+   const first=document.getElementById("borrowedFirst")?.value;
+   const freq=Number(document.getElementById("borrowedFrequency")?.value||1);
+   const term=Math.round(nonneg(document.getElementById("borrowedTerm")?.value));
+   const p=borrowedPlan(amount,first,freq,term);
+   const b=document.querySelector("#borrowedEmiPreview b");
+   if(b)b.textContent=money(p.payment,currency);
+   const t=document.getElementById("borrowedPreviewText");
+   if(t)t.textContent=p.count?`${p.count} planned repayments over ${term} months.`:"Enter amount, first repayment date and term to calculate.";
+ },
+ saveBorrowed(){
+   const currency=document.getElementById("borrowedCurrency").value;
+   const amount=nonneg(document.getElementById("borrowedAmount").value);
+   const from=document.getElementById("borrowedFrom").value.trim();
+   const purpose=document.getElementById("borrowedPurpose").value.trim();
+   const first=document.getElementById("borrowedFirst").value;
+   const freq=Number(document.getElementById("borrowedFrequency").value);
+   const term=Math.round(nonneg(document.getElementById("borrowedTerm").value));
+   if(!amount||!from||!first||!term){alert("Enter amount, from, first repayment date and borrowing term.");return}
+   const p=borrowedPlan(amount,first,freq,term);
+   const labels={1:"Monthly",3:"Quarterly",6:"Half yearly",12:"Yearly"};
+   state.borrowed.unshift({
+     id:uid("BR"),currency,amount,from,purpose,firstDate:first,
+     frequencyMonths:freq,frequencyLabel:labels[freq]||"Custom",termMonths:term,
+     payment:p.payment,rows:p.rows,status:"active",remainingAed:0
+   });
+   this.closeBorrowed();
+   renderAll();
+ },
+ setBorrowedStatus(id,status){const x=state.borrowed.find(b=>b.id===id);if(x){x.status=status;renderAll()}},
+ deleteBorrowed(id){if(confirm("Delete this borrowed entry?")){state.borrowed=state.borrowed.filter(b=>b.id!==id);renderAll()}},
+ toggleLoanForm(force){
+   const el=document.getElementById("loanForm");
+   el.classList.toggle("show",typeof force==="boolean"?force:!el.classList.contains("show"));
+ },
+ addLoan(){try{const cfg={name:document.getElementById("loanName").value.trim(),currency:document.getElementById("loanCurrency").value,principal:nonneg(document.getElementById("loanPrincipal").value),start:document.getElementById("loanStart").value,firstEmi:document.getElementById("loanFirst").value,rate:nonneg(document.getElementById("loanRate").value),tenure:Math.round(nonneg(document.getElementById("loanTenure").value)),method:document.getElementById("loanMethod").value,emi:nonneg(document.getElementById("loanEmi").value)};if(!cfg.name)throw new Error("Enter a loan name.");const g=generateLoanSchedule(cfg);state.loans.unshift({id:uid("L"),...cfg,emi:g.emi,rows:g.rows,status:"active"});document.getElementById("loanError").textContent="";this.toggleLoanForm(false);["loanName","loanPrincipal","loanStart","loanFirst","loanRate","loanTenure","loanEmi"].forEach(id=>document.getElementById(id).value="");renderAll()}catch(e){document.getElementById("loanError").textContent=e.message}},
+ setLoanStatus(id,s){const x=state.loans.find(l=>l.id===id);if(x){x.status=s;renderAll()}},deleteLoan(id){if(confirm("Delete this loan?")){state.loans=state.loans.filter(x=>x.id!==id);renderAll()}},
+ toggleCardForm(force){
+   const el=document.getElementById("cardForm");
+   el.classList.toggle("show",typeof force==="boolean"?force:!el.classList.contains("show"));
+ },
+ addCard(){const name=document.getElementById("cardName").value.trim();if(!name)return;state.cards.unshift({id:uid("C"),name,currency:document.getElementById("cardCurrency").value,limit:nonneg(document.getElementById("cardLimit").value),outstanding:nonneg(document.getElementById("cardOutstanding").value),dueDate:document.getElementById("cardDue").value,status:""});this.toggleCardForm(false);["cardName","cardLimit","cardOutstanding","cardDue"].forEach(id=>document.getElementById(id).value="");renderAll()},
+ editCard(id,f,v){const x=state.cards.find(c=>c.id===id);if(x){x[f]=(f==="limit"||f==="outstanding")?nonneg(v):v;renderAll()}},toggleCardStatus(id){const x=state.cards.find(c=>c.id===id);if(x){x.status=x.status?"":"paid";if(x.status)x.outstanding=0;renderAll()}},deleteCard(id){state.cards=state.cards.filter(c=>c.id!==id);renderAll()},
+ openAllocation(){
+   document.getElementById("allocationDialogTitle").textContent="Add allocation";
+   document.getElementById("allocationEditId").value="";
+   document.getElementById("allocationType").value=activePremiumTab==="assets"?"assets":activePremiumTab;
+   document.getElementById("allocationCurrency").value="AED";
+   document.getElementById("allocationName").value="";
+   document.getElementById("allocationAmount").value="";
+   document.getElementById("allocationNetWorth").value="no";
+   document.getElementById("allocationAedValue").value="";
+   document.getElementById("allocationFirst").value="";
+   document.getElementById("allocationCycle").value="monthly";
+   this.allocationTypeChanged();this.allocationNetWorthChanged();
+   document.getElementById("allocationOverlay").classList.add("show");
+ },
+ closeAllocation(){document.getElementById("allocationOverlay").classList.remove("show")},
+ allocationTypeChanged(){
+   const type=document.getElementById("allocationType").value;
+   document.querySelectorAll(".allocation-schedule").forEach(e=>e.style.display=type==="assets"?"none":"flex");
+ },
+ allocationNetWorthChanged(){
+   const yes=document.getElementById("allocationNetWorth").value==="yes";
+   const cur=document.getElementById("allocationCurrency").value;
+   document.getElementById("allocationAedValueWrap").style.display=(yes&&cur!=="AED")?"flex":"none";
+ },
+ editAllocation(kind,id){
+   const x=kind==="assets"?state.assets.find(a=>a.id===id):state.premiums.find(p=>p.id===id);
+   if(!x)return;
+   document.getElementById("allocationDialogTitle").textContent="Edit allocation";
+   document.getElementById("allocationEditId").value=kind+"|"+id;
+   document.getElementById("allocationType").value=kind==="assets"?"assets":x.type;
+   document.getElementById("allocationCurrency").value=x.currency||"AED";
+   document.getElementById("allocationName").value=x.name||"";
+   document.getElementById("allocationAmount").value=round2(x.amount);
+   document.getElementById("allocationNetWorth").value=x.countNetWorth?"yes":"no";
+   document.getElementById("allocationAedValue").value=round2(x.netWorthAed||0);
+   document.getElementById("allocationFirst").value=x.firstDate||"";
+   document.getElementById("allocationCycle").value=x.cycle||"monthly";
+   this.allocationTypeChanged();this.allocationNetWorthChanged();
+   document.getElementById("allocationOverlay").classList.add("show");
+ },
+ saveAllocation(){
+   const type=document.getElementById("allocationType").value;
+   const currency=document.getElementById("allocationCurrency").value;
+   const name=document.getElementById("allocationName").value.trim();
+   const amount=nonneg(document.getElementById("allocationAmount").value);
+   const countNetWorth=document.getElementById("allocationNetWorth").value==="yes";
+   const netWorthAed=currency==="AED"?amount:nonneg(document.getElementById("allocationAedValue").value);
+   const firstDate=document.getElementById("allocationFirst").value;
+   const cycle=document.getElementById("allocationCycle").value;
+   if(!name||!amount){alert("Enter a name and amount.");return}
+   if(type!=="assets"&&!firstDate){alert("Choose the first payment date.");return}
+   if(countNetWorth&&currency!=="AED"&&!netWorthAed){alert("Enter the AED equivalent for net wealth.");return}
+   const edit=document.getElementById("allocationEditId").value;
+   if(edit){
+     const [oldKind,id]=edit.split("|");
+     const old=oldKind==="assets"?state.assets.find(a=>a.id===id):state.premiums.find(p=>p.id===id);
+     if(oldKind==="assets")state.assets=state.assets.filter(a=>a.id!==id);else state.premiums=state.premiums.filter(p=>p.id!==id);
+     const entry={id,name,amount,currency,countNetWorth,netWorthAed};
+     if(type==="assets")state.assets.push(entry);
+     else state.premiums.push({...entry,type,firstDate,cycle});
+   }else{
+     const entry={id:uid("AL"),name,amount,currency,countNetWorth,netWorthAed};
+     if(type==="assets")state.assets.unshift(entry);
+     else state.premiums.unshift({...entry,type,firstDate,cycle});
+   }
+   this.closeAllocation();this.showPremiumTab(type);renderAll();
+ },
+ showPremiumTab(type){
+   activePremiumTab=type;
+   document.getElementById("premiumTabPremium").classList.toggle("active",type==="premium");
+   document.getElementById("premiumTabSubscription").classList.toggle("active",type==="subscription");
+   document.getElementById("premiumTabAssets").classList.toggle("active",type==="assets");
+   document.getElementById("premiumPremium").classList.toggle("active",type==="premium");
+   document.getElementById("premiumSubscription").classList.toggle("active",type==="subscription");
+   document.getElementById("assetPanel").classList.toggle("active",type==="assets");
+ },
+ addBudgetRow(type){state.budget[type].push({id:uid("B"),name:"",amount:0});renderAll()},editBudget(type,id,f,v){const x=state.budget[type].find(r=>r.id===id);if(x){x[f]=f==="amount"?nonneg(v):v;renderAll()}},deleteBudget(type,id){state.budget[type]=state.budget[type].filter(r=>r.id!==id);renderAll()},resetBudget(){if(confirm("Clear budget calculator?")){state.budget={income:[],expense:[]};renderAll()}}
+};
+function renderIncomeRows(){if(activeIncomeMonth===null)return;const m=state.monthly.months[activeIncomeMonth];document.getElementById("incomeRows").innerHTML=m.incomes.length?m.incomes.map(x=>`<div class="budget-row"><input value="${esc(x.name)}" onchange="App.setIncome(${activeIncomeMonth},'${esc(x.id)}','name',this.value)"><input inputmode="decimal" value="${round2(x.amount)}" onchange="App.setIncome(${activeIncomeMonth},'${esc(x.id)}','amount',this.value)"><button class="iconbtn" onclick="App.deleteIncome(${activeIncomeMonth},'${esc(x.id)}')">×</button></div>`).join(""):'<div class="empty">No income lines yet.</div>'}
+
+/* import/export: accepts Finance Vision and the converted Finance AI v3 full-state backup */
+async function exportBackup(){
+  save();
+  const payload={app:APP_NAME,version:VERSION,financeVisionSchema:BACKUP_SCHEMA,exportedAt:new Date().toISOString(),state};
+  const text=JSON.stringify(payload,null,2);
+  const fileName="finance-vision-backup-"+today()+".json";
+  const file=new File([text],fileName,{type:"application/json"});
+  try{
+    if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+      await navigator.share({files:[file],title:"Finance Vision backup"});
+      return;
+    }
+  }catch(e){
+    if(e && e.name==="AbortError")return;
+  }
+  const blob=new Blob([text],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=fileName;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+async function importBackup(file){
+  try{
+    const d=JSON.parse(await file.text());
+    if(!d?.state||!["Finance AI","Finance Vision"].includes(d.app))throw 0;
+    const schema=Number(d.financeVisionSchema||1);
+    if(schema>BACKUP_SCHEMA){alert("This backup was created by a newer Finance Vision version. Update the app before importing it.");return;}
+    if(!confirm("Import this backup and replace current local data?"))return;
+    state=normalize(d.state);save();renderAll();toast("Backup imported");
+  }catch(e){alert("This is not a supported Finance Vision / Finance AI full-state backup.")}
+}
+document.getElementById("exportBtn").onclick=exportBackup;document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();document.getElementById("importFile").onchange=e=>{if(e.target.files[0])importBackup(e.target.files[0]);e.target.value=""};
+
+/* report images stay inside the app */
+window.Reports=(function(){
+ let currentBlob=null;
+ function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+ function table(title,sub,cols,rows,left=290,cw=125){const rh=44,w=Math.max(1050,left+cols.length*cw+60),h=150+(rows.length+1)*rh+30,c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");x.fillStyle="#f5f8fd";x.fillRect(0,0,w,h);x.fillStyle="#fff";rr(x,14,14,w-28,h-28,22);x.fill();const g=x.createLinearGradient(28,28,w-28,28);g.addColorStop(0,"#f8dfef");g.addColorStop(1,"#e9ebff");x.fillStyle=g;rr(x,28,28,w-56,68,18);x.fill();x.fillStyle="#202b46";x.font="700 27px -apple-system,BlinkMacSystemFont,Segoe UI";x.fillText(title,45,63);x.fillStyle="#7b8aa5";x.font="500 14px -apple-system,BlinkMacSystemFont,Segoe UI";x.fillText(sub,45,85);const top=110;x.fillStyle="#eef2fa";x.fillRect(28,top,w-56,rh);x.fillStyle="#56657f";x.font="700 13px -apple-system,BlinkMacSystemFont,Segoe UI";x.fillText("Detail",43,top+27);cols.forEach((v,i)=>{x.textAlign="center";x.fillText(v,28+left+i*cw+cw/2,top+27)});rows.forEach((r,ri)=>{const y=top+(ri+1)*rh;x.fillStyle=ri%2?"#fbfcff":"#fff";x.fillRect(28,y,w-56,rh);x.strokeStyle="#e3e8f2";x.beginPath();x.moveTo(28,y);x.lineTo(w-28,y);x.stroke();x.fillStyle=r.color||"#202b46";x.font=(r.bold?"700 ":"600 ")+"12px -apple-system,BlinkMacSystemFont,Segoe UI";x.textAlign="left";x.fillText(r.label,43,y+27);r.values.forEach((v,ci)=>{const o=typeof v==="object"?v:{text:String(v)};x.fillStyle=o.color||"#202b46";x.font=(o.bold?"700 ":"600 ")+"11px -apple-system,BlinkMacSystemFont,Segoe UI";x.textAlign="center";x.fillText(o.text,28+left+ci*cw+cw/2,y+27)})});return c}
+ function show(c){c.toBlob(b=>{currentBlob=b;const u=URL.createObjectURL(b),im=document.getElementById("reportImage");if(im.dataset.url)URL.revokeObjectURL(im.dataset.url);im.dataset.url=u;im.src=u;document.getElementById("reportView").classList.add("show")},"image/png")}
+ function monthly(){const c=calcMonths(),cols=c.map(x=>monthLabel(x.key).split(" ")[0]),names=[],seen=new Set();state.monthly.months.forEach(m=>m.expenses.forEach(e=>{if(!seen.has(e.name)){seen.add(e.name);names.push(e.name)}}));const rows=[{label:"Opening / carry forward",bold:true,values:c.map(x=>({text:money(x.opening),color:x.opening<0?"#e75470":"#202b46"}))},{label:"Income",values:c.map(x=>money(x.income))}];names.forEach(name=>rows.push({label:name,values:state.monthly.months.map(m=>money(m.expenses.filter(e=>e.name===name).reduce((s,e)=>s+nonneg(e.amount),0)))}));rows.push({label:"Total expense",bold:true,values:c.map(x=>money(x.expense))});rows.push({label:"Closing balance",bold:true,color:"#16845e",values:c.map(x=>({text:money(x.close),color:x.close<0?"#e75470":"#16845e",bold:true}))});show(table("Finance Vision — Annual cash flow","12-month horizontal cash-flow table",cols,rows,300,125))}
+ function loans(){
+   const rows=[];
+   state.loans.forEach(l=>rows.push({
+     label:l.name,
+     values:[
+       "Loan",
+       money(l.emi||0,l.currency),
+       money(loanRemaining(l),l.currency),
+       (l.status||"active")
+     ]
+   }));
+   state.cards.forEach(c=>rows.push({
+     label:c.name,
+     values:[
+       "Credit card",
+       money(c.limit||0),
+       money(c.outstanding||0),
+       (c.status||("Due "+(c.dueDate||"—")))
+     ]
+   }));
+   state.borrowed.forEach(b=>rows.push({
+     label:b.from+(b.purpose?" — "+b.purpose:""),
+     values:[
+       "Borrowed",
+       money(b.payment||0,b.currency||"AED"),
+       money(borrowedRemaining(b),b.currency||"AED"),
+       (b.status||b.frequencyLabel||"active")
+     ]
+   }));
+   show(table(
+     "Finance Vision — Debts",
+     "Loans, credit cards and borrowed money",
+     ["Type","EMI / Limit","Balance","Due / Status"],
+     rows,
+     300,180
+   ));
+ }
+ function premiums(){
+   const rows=[];
+   state.premiums.forEach(p=>rows.push({
+     label:p.name,
+     values:[
+       p.type==="premium"?"Premium":"Subscription",
+       p.currency||"AED",
+       money(p.amount,p.currency||"AED"),
+       p.countNetWorth?"Yes":"No"
+     ]
+   }));
+   state.assets.forEach(a=>rows.push({
+     label:a.name||"Unnamed asset",
+     values:[
+       "Asset",
+       a.currency||"AED",
+       money(a.amount,a.currency||"AED"),
+       a.countNetWorth?"Yes":"No"
+     ]
+   }));
+   show(table("Finance Vision — Allocations","Premiums, subscriptions and assets",["Type","Currency","Amount / value","Net wealth"],rows,300,180))
+ }
+ function close(){document.getElementById("reportView").classList.remove("show")}async function share(){if(!currentBlob)return;try{const f=new File([currentBlob],"finance-vision-report.png",{type:"image/png"});if(navigator.share)await navigator.share({files:[f],title:"Finance Vision report"})}catch(e){}}
+ return{monthly,loans,premiums,close,share}
+})();
+
+const bottomNav=document.getElementById("bottom-nav");
+const appScroller=document.getElementById("app-scroll");
+
+function setBottomNavHeight(){
+  document.documentElement.style.setProperty("--nav-h","80px");
+}
+
+if(bottomNav && bottomNav.parentElement!==document.body){
+  document.body.appendChild(bottomNav);
+}
+
+setBottomNavHeight();
+window.addEventListener("resize",setBottomNavHeight);
+window.addEventListener("orientationchange",()=>setTimeout(setBottomNavHeight,120));
+
+document.querySelectorAll(".navbtn").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===b.dataset.target));
+  document.querySelectorAll(".navbtn").forEach(x=>x.classList.toggle("active",x===b));
+  if(appScroller)appScroller.scrollTop=0;
+  requestAnimationFrame(setBottomNavHeight);
+});
+renderAll();
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}));
+}
+setTimeout(()=>{
+  const splash=document.getElementById("splash");
+  if(splash)splash.classList.add("force-hide");
+},1550);
+})();
+</script>
+</body>
+</html>
